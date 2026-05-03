@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Рабочий Обзор — Аутсорсинг</title>
+
+  <!-- ШРИФТ -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+
+    body {
+      background:lab(18.33% -6.58 -8.7 / 0.947);
+      color:#ffffff;
+      overflow-x:hidden;
+    }
+
+    header {
+      padding:20px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      background:rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      position:sticky;
+      top:0;
+      z-index:10;
+    }
+
+    .logo {
+      font-weight:800;
+      font-size:20px;
+      color:#f6f2f2da;
+    }
+
+    .phone {
+      background:#22c55e;
+      padding:10px 16px;
+      border-radius:10px;
+      text-decoration:none;
+      color:#fff;
+      font-weight:600;
+    }
+
+    .hero {
+      padding:40px 20px;
+      text-align:center;
+    }
+
+    .hero h1 {
+      font-size:28px;
+      margin-bottom:10px;
+    }
+
+    .hero p {
+      opacity:0.7;
+    }
+
+    .services {
+      padding:20px;
+    }
+
+    .services h2 {
+      margin-bottom:15px;
+    }
+
+    .scroll {
+      display:flex;
+      gap:15px;
+      overflow-x:auto;
+      padding-bottom:10px;
+    }
+
+.card {
+  min-width:260px;
+  flex: 0 0 260px;   /* ВОТ ЭТО ФИКСИТ СКРОЛЛ */
+
+  background:#336328aa;
+  border-radius:16px;
+  padding:15px;
+  transition:0.3s;
+  position:relative;
+
+  display:flex;
+  flex-direction:column;
+}
+
+    .card:hover {
+      transform:translateY(-5px) scale(1.02);
+    }
+
+.card img {
+  width:100%;
+  height:160px;        /* фикс высоты */
+  object-fit:cover;    /* ключ! */
+  border-radius:10px;
+  margin-bottom:10px;
+}
+
+    .card h3 {
+      font-size:16px;
+      margin-bottom:5px;
+    }
+
+    .price {
+      margin:8px 0;
+      font-weight:600;
+      color:#29dd6b;
+    }
+
+    .btn {
+      display:block;
+      text-align:center;
+      padding:10px;
+      background:#38bdf8;
+      border-radius:10px;
+      text-decoration:none;
+      color:#000;
+      font-weight:600;
+    }
+
+    .contacts {
+      padding:30px 20px;
+      text-align:center;
+    }
+
+    .messengers a {
+      margin:5px;
+      display:inline-block;
+      padding:10px 14px;
+      border-radius:10px;
+      background:#334155;
+      text-decoration:none;
+      color:#fff;
+    }
+
+    footer {
+      padding:20px;
+      text-align:center;
+      opacity:0.5;
+    }
+
+    .info-btn {
+  margin-top:8px;
+  padding:8px;
+  width:100%;
+  background:hsla(0, 98%, 17%, 0.548);
+  border:none;
+  border-radius:8px;
+  color:#fff;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.info-btn:hover {
+  background:#475569;
+}
+
+.modal {
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.7);
+  justify-content:center;
+  align-items:center;
+  z-index:100;
+}
+
+.modal-content {
+  background:#1e293b;
+  padding:20px;
+  border-radius:16px;
+  max-width:400px;
+  width:90%;
+}
+
+.close {
+  float:right;
+  font-size:24px;
+  cursor:pointer;
+}
+
+.card-bottom {
+  margin-top:auto;   /* ВАЖНО — прижимает вниз */
+}
+
+.card p {
+  max-height:42px;
+  overflow:auto;
+  font-size:14px;
+  line-height:1.3;
+}
+
+.about {
+  padding:30px 20px;
+}
+
+.about h2 {
+  margin-bottom:15px;
+}
+
+.about-box {
+  background:rgba(255,255,255,0.05);
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:20px;
+  backdrop-filter: blur(10px);
+}
+
+.about-box p {
+  opacity:0.8;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.about-grid {
+  display:flex;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.about-card {
+  flex:1;
+  min-width:240px;
+  background:#1e293b;
+  padding:15px;
+  border-radius:12px;
+}
+
+.about-card h3 {
+  margin-bottom:10px;
+}
+
+.about-card ul {
+  padding-left:15px;
+  font-size:14px;
+  opacity:0.9;
+}
+
+.about-card li {
+  margin-bottom:5px;
+}
+
+.plus {
+  border:1px solid #22c55e55;
+}
+
+.minus {
+  border:1px solid #ef444455;
+}
+
+.steps {
+  padding:30px 20px;
+}
+
+.steps h2 {
+  margin-bottom:20px;
+  text-align:center;
+}
+
+.steps-grid {
+  display:flex;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.step {
+  flex:1;
+  min-width:240px;
+  background:#1e293b;
+  border-radius:12px;
+  padding:20px;
+  text-align:center;
+
+  opacity:0;
+  transform:translateY(30px);
+  transition:0.5s;
+}
+
+.step.active {
+  opacity:1;
+  transform:translateY(0);
+}
+
+.step-number {
+  font-size:28px;
+  font-weight:800;
+  color:#22c55e;
+  margin-bottom:10px;
+}
+
+.step p {
+  font-size:14px;
+  opacity:0.8;
+}
+
+.reviews {
+  padding:30px 20px;
+}
+
+.reviews h2 {
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.reviews-scroll {
+  display:flex;
+  gap:15px;
+  overflow-x:auto;
+  padding-bottom:10px;
+  scroll-behavior: smooth;
+}
+
+.review {
+  min-width:260px;
+  flex:0 0 260px;
+
+  background:#1e293b;
+  border-radius:12px;
+  padding:15px;
+
+  opacity:0;
+  transform:translateY(30px);
+  transition:0.5s;
+}
+
+.review.active {
+  opacity:1;
+  transform:translateY(0);
+}
+
+.review-top {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.review-top img {
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.review-name {
+  font-size:14px;
+  font-weight:600;
+}
+
+.review-text {
+  font-size:13px;
+  opacity:0.8;
+  line-height:1.4;
+}
+  </style>
+
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">×</span>
+    <h2 id="modal-title"></h2>
+    <p id="modal-text"></p>
+  </div>
+</div>
+
+
+</head>
+
+<body>
+
+<header>
+  <div class="logo">Рабочий Обзор</div>
+  <a href="tel:+79999999999" class="phone">Позвонить</a>
+</header>
+
+<section class="hero">
+  <h2>Аутсорсинговая компания</h2>
+  <h5>Профессионально. Быстро. Надежно.</h5>
+  <p>Грузчики • Разнорабочие • Земельные работы • Уборка • Мастер на час</p>
+</section>
+
+<section class="services">
+  <h2>Наши услуги</h2>
+
+  <div class="scroll">
+
+<div class="card">
+  <img src="img/raznorabohii.jpg" alt="Грузчики">
+  <h3>Услуга разнорабочих</h3>
+  <p>Общестроительные работы. </p>
+
+      <div class="price">от 500₽ / час</div>
+  <button class="info-btn" onclick="openModal('raznorabohii')">Подробнее</button>
+  <a href="tel:+79999999999" class="btn">Позвонить</a>
+</div>
+
+
+<div class="card">
+  <img src="img/gruzchiki.jpg" alt="Грузчики">
+  <h3>Грузчики</h3>
+  <p>Переезды, разгрузка. </p>
+
+      <div class="price">от 500₽ / час</div>
+  <button class="info-btn" onclick="openModal('gruzchiki')">Подробнее</button>
+  <a href="tel:+79999999999" class="btn">Позвонить</a>
+</div>
+
+    <div class="card">
+      <img src="img/zemlya.jpg" alt="Земельные работы">
+      <h3>Земельные работы</h3>
+      <p>Копка, благоустройство </p>
+      
+      <div class="price">от 700₽ / час</div>
+      <button class="info-btn" onclick="openModal('zemlya')">Подробнее</button>
+      <a href="tel:+79999999999" class="btn">Позвонить</a>
+    </div>
+
+    <div class="card">
+      <img src="img/uborka.jpg" alt="Уборка территории">
+      <h3>Уборка территории</h3>
+      <p>Чистка участков</p>
+      
+      <div class="price">от 400₽ / час</div>
+      <button class="info-btn" onclick="openModal('uborka')">Подробнее</button>
+      <a href="tel:+79999999999" class="btn">Позвонить</a>
+    </div>
+
+    <div class="card">
+      <img src="img/fasovka.jpg" alt="Фасовщики">
+      <h3>Фасовщики</h3>
+      <p>Работа на производстве</p>
+      
+      <div class="price">договорная</div>
+      <button class="info-btn" onclick="openModal('fasovka')">Подробнее</button>
+      <a href="tel:+79999999999" class="btn">Позвонить</a>
+    </div>
+
+    <div class="card">
+      <img src="img/master.jpg" alt="Мастер на час">
+      <h3>Мастер на час</h3>
+      <p>Мелкий ремонт</p>
+      
+      <div class="price">от 800₽</div>
+      <button class="info-btn" onclick="openModal('master')">Подробнее</button>
+      <a href="tel:+79999999999" class="btn">Позвонить</a>
+    </div>
+
+    <div class="card">
+      <img src="img/demontag.jpg" alt="Демонтажные работы">
+      <h3>Демонтажные работы</h3>
+      <p>Рабочие</p>
+      
+      <div class="price">от 800₽</div>
+      <button class="info-btn" onclick="openModal('demontag')">Подробнее</button>
+      <a href="tel:+79999999999" class="btn">Позвонить</a>
+    </div>
+
+  </div>
+</section>
+
+<section class="about">
+
+  <h2>Почему выбирают нас</h2>
+
+  <div class="about-box">
+    <p>
+      Мы — команда проверенных специалистов, которые закрывают задачи быстро и без лишних разговоров.
+      От грузчиков до демонтажа — вы получаете готовое решение, а не “поиск рабочих”.
+    </p>
+  </div>
+
+  <div class="about-grid">
+
+    <div class="about-card plus">
+      <h3>✅ Наши плюсы</h3>
+      <ul>
+        <li>Быстрый выезд (часто в день обращения)</li>
+        <li>Адекватные цены без скрытых платежей</li>
+        <li>Проверенные рабочие</li>
+        <li>Работаем без простоев</li>
+      </ul>
+    </div>
+
+    <div class="about-card minus">
+      <h3>⚠️ Кому не подойдём</h3>
+      <ul>
+        <li>Если ищете “самую дешёвую цену”</li>
+        <li>Если нужны рабочие “когда-нибудь потом”</li>
+        <li>Если нет чёткого задания</li>
+      </ul>
+    </div>
+
+  </div>
+
+</section>
+
+<section class="steps">
+
+  <h2>Как мы работаем</h2>
+
+  <div class="steps-grid">
+
+    <div class="step">
+      <div class="step-number">1</div>
+      <h3>Оставляете заявку</h3>
+      <p>Звоните или пишете — уточняем задачу и рассчитываем стоимость.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-number">2</div>
+      <h3>Выход на объект</h3>
+      <p>Подбираем рабочих и отправляем их в удобное для вас время.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-number">3</div>
+      <h3>Выполнение работы</h3>
+      <p>Контролируем процесс и доводим задачу до результата.</p>
+    </div>
+
+  </div>
+
+</section>
+
+<section class="reviews">
+
+  <h2>Отзывы клиентов</h2>
+
+  <div class="reviews-scroll">
+
+<div class="review">
+  <div class="review-top">
+    <img src="https://i.pravatar.cc/100?img=15">
+    <div class="review-name">Дмитрий</div>
+  </div>
+  <div class="review-text">
+    Заказывал разнорабочих — приехали вовремя, без опозданий. Сделали всё чётко.
+  </div>
+</div>
+
+<div class="review">
+  <div class="review-top">
+    <img src="https://i.pravatar.cc/100?img=20">
+    <div class="review-name">Ольга</div>
+  </div>
+  <div class="review-text">
+    Очень понравился подход — без лишних слов, всё по делу. Буду обращаться ещё.
+  </div>
+</div>
+
+<div class="review">
+  <div class="review-top">
+    <img src="https://i.pravatar.cc/100?img=25">
+    <div class="review-name">Никита</div>
+  </div>
+  <div class="review-text">
+    Срочно нужны были люди — нашли за пару часов. Это уровень.
+  </div>
+</div>    
+
+    <div class="review">
+      <div class="review-top">
+        <img src="https://i.pravatar.cc/100?img=1">
+        <div class="review-name">Алексей</div>
+      </div>
+      <div class="review-text">
+        Заказывал грузчиков — приехали быстро, всё аккуратно перенесли. Без лишних разговоров.
+      </div>
+    </div>
+
+    <div class="review">
+      <div class="review-top">
+        <img src="https://i.pravatar.cc/100?img=5">
+        <div class="review-name">Ирина</div>
+      </div>
+      <div class="review-text">
+        Делали уборку участка после стройки. Всё вывезли, чисто и быстро. Рекомендую.
+      </div>
+    </div>
+
+    <div class="review">
+      <div class="review-top">
+        <img src="https://i.pravatar.cc/100?img=12">
+        <div class="review-name">Сергей</div>
+      </div>
+      <div class="review-text">
+        Брали рабочих на демонтаж — сделали за день, где другие обещали 2-3.
+      </div>
+    </div>
+
+    <div class="review">
+      <div class="review-top">
+        <img src="https://i.pravatar.cc/100?img=8">
+        <div class="review-name">Марина</div>
+      </div>
+      <div class="review-text">
+        Мастер на час реально спас — быстро починил всё по дому.
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<section class="contacts">
+  <h2>Связаться</h2>
+  <div class="messengers">
+    <a href="#">Telegram</a>
+    <a href="#">WhatsApp</a>
+    <a href="#">VK</a>
+  </div>
+</section>
+
+<footer>
+  © 2026 Рабочий Обзор
+</footer>
+
+<script>
+
+function openModal(type){
+  const title = document.getElementById('modal-title');
+  const text = document.getElementById('modal-text');
+  const modal = document.getElementById('modal');
+
+  if(type === 'raznorabohii'){
+    title.innerText = 'Разнорабочие';
+    text.innerText = 'Разнорабочий выполняет широкий спектр неквалифицированных физических работ: погрузку/разгрузку материалов, уборку территорий и помещений, демонтаж конструкций, помощь квалифицированным специалистам (каменщикам, монтажникам), а также мелкий ремонт. Основная задача — выполнение вспомогательных поручений на стройках, складах и производстве';
+  }
+
+  if(type === 'gruzchiki'){
+    title.innerText = 'Грузчики';
+    text.innerText = 'Погрузка, разгрузка, переезды, складские работы. Работаем быстро и аккуратно.';
+  }
+
+  if(type === 'zemlya'){
+    title.innerText = 'Земельные работы';
+    text.innerText = 'Копка траншей, ям, планировка участка, благоустройство территории.';
+  }
+
+  if(type === 'uborka'){
+    title.innerText = 'Уборка территории';
+    text.innerText = 'Очистка участков, вывоз мусора, уборка после строительства.';
+  }
+
+  if(type === 'fasovka'){
+    title.innerText = 'Фасовщики';
+    text.innerText = 'Работа на складе и производстве: упаковка, сортировка, фасовка.';
+  }
+
+  if(type === 'master'){
+    title.innerText = 'Мастер на час';
+    text.innerText = 'Мелкий ремонт, сборка мебели, сантехника, электрика.';
+  }
+
+  if(type === 'demontag'){
+    title.innerText = 'Демонтажные работы';
+    text.innerText = 'Снос конструкций, демонтаж стен, вывоз строительного мусора.';
+  }
+
+  modal.style.display = 'flex';
+}
+
+function closeModal(){
+  document.getElementById('modal').style.display = 'none';
+}
+
+  // Простая анимация появления
+  const cards = document.querySelectorAll('.card');
+
+  window.addEventListener('scroll', () => {
+    cards.forEach(card => {
+      const top = card.getBoundingClientRect().top;
+      if(top < window.innerHeight - 50){
+        card.style.opacity = 1;
+        card.style.transform = 'translateY(0)';
+      }
+    });
+  });
+
+  // Анимация блока "как мы работаем"
+const steps = document.querySelectorAll('.step');
+
+window.addEventListener('scroll', () => {
+  steps.forEach(step => {
+    const top = step.getBoundingClientRect().top;
+    if(top < window.innerHeight - 50){
+      step.classList.add('active');
+    }
+  });
+});
+
+// Анимация отзывов
+const reviews = document.querySelectorAll('.review');
+
+window.addEventListener('scroll', () => {
+  reviews.forEach((el, i) => {
+    const top = el.getBoundingClientRect().top;
+    if(top < window.innerHeight - 50){
+      setTimeout(() => {
+        el.classList.add('active');
+      }, i * 150); // задержка для "каскада"
+    }
+  });
+});
+
+// Авто-прокрутка отзывов
+const reviewsContainer = document.querySelector('.reviews-scroll');
+
+let scrollAmount = 0;
+
+function autoScrollReviews(){
+  if(!reviewsContainer) return;
+
+  scrollAmount += 1;
+
+  reviewsContainer.scrollLeft += 1;
+
+  // если дошли до конца — возвращаемся в начало
+  if(scrollAmount >= reviewsContainer.scrollWidth - reviewsContainer.clientWidth){
+    scrollAmount = 0;
+    reviewsContainer.scrollLeft = 0;
+  }
+}
+
+// плавная бесконечная прокрутка
+setInterval(autoScrollReviews, 20);
+</script>
+
+</body>
+</html>
