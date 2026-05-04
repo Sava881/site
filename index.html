@@ -364,6 +364,76 @@
   opacity:0.8;
   line-height:1.4;
 }
+
+.modal-gallery {
+  margin-top:15px;
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+}
+
+.modal-gallery img {
+  width:120px;
+  height:90px;
+  object-fit:cover;
+  border-radius:8px;
+  flex:0 0 auto;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.modal-gallery img:hover {
+  transform:scale(1.05);
+}
+
+.img-viewer {
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.9);
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.img-viewer img {
+  max-width:90%;
+  max-height:90%;
+  border-radius:10px;
+}
+
+.img-close {
+  position:absolute;
+  top:20px;
+  right:25px;
+  font-size:30px;
+  color:#ffffff;
+  cursor:pointer;
+}
+
+.img-prev,
+.img-next {
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:40px;
+  color:#000000;
+  cursor:pointer;
+  padding:10px;
+  user-select:none;
+}
+
+.img-prev { left:20px; }
+.img-next { right:20px; }
+
+.img-prev:hover,
+.img-next:hover,
+.img-close:hover {
+  opacity:0.7;
+}
   </style>
 
 <div id="modal" class="modal">
@@ -371,9 +441,26 @@
     <span class="close" onclick="closeModal()">×</span>
     <h2 id="modal-title"></h2>
     <p id="modal-text"></p>
+    <div class="modal-gallery" id="modal-gallery"></div>
   </div>
 </div>
 
+<!-- 🔽 FULLSCREEN КАРТИНКА -->
+<div id="img-viewer" class="img-viewer">
+  
+  <!-- ❌ КРЕСТИК -->
+  <span class="img-close" onclick="closeImage()">×</span>
+
+  <!-- ⬅️ СТРЕЛКА -->
+  <span class="img-prev" onclick="prevImage()">‹</span>
+
+  <!-- КАРТИНКА -->
+  <img id="img-full" src="">
+
+  <!-- ➡️ СТРЕЛКА -->
+  <span class="img-next" onclick="nextImage()">›</span>
+
+</div>
 
 </head>
 
@@ -639,6 +726,8 @@
 <script>
 
 function openModal(type){
+const gallery = document.getElementById('modal-gallery');
+gallery.innerHTML = ''; // очищаем старые фото
   const title = document.getElementById('modal-title');
   const text = document.getElementById('modal-text');
   const modal = document.getElementById('modal');
@@ -646,41 +735,150 @@ function openModal(type){
   if(type === 'raznorabohii'){
     title.innerText = 'Разнорабочие';
     text.innerText = 'Разнорабочий выполняет широкий спектр неквалифицированных физических работ: погрузку/разгрузку материалов, уборку территорий и помещений, демонтаж конструкций, помощь квалифицированным специалистам (каменщикам, монтажникам), а также мелкий ремонт. Основная задача — выполнение вспомогательных поручений на стройках, складах и производстве';
+  
+      const images = [
+    'img/razno1.jpg',
+    'img/razno2.jpg',
+    'img/razno3.jpg'  
+  ];
+currentImages = images;
+
+  images.forEach(src => {
+    const img = document.createElement('img');
+img.src = src;
+img.onclick = () => openImage(src);
+gallery.appendChild(img);
+  });
   }
 
   if(type === 'gruzchiki'){
     title.innerText = 'Грузчики';
     text.innerText = 'Услуги грузчиков — это профессиональная помощь в перемещении, погрузке, разгрузке, сборке и упаковке имущества при переездах или транспортировке грузов. Квартирный/офисный переезд: Комплексная услуга.Складские работы: Сортировка, упаковка, погрузка товара.Строительные работы: Вывоз строительного мусора';
+
+        const images = [
+    'img/gruzchiki1.jpg',
+    'img/gruzchiki2.jpg',
+    'img/gruzchiki3.jpg'
+  ];
+currentImages = images;
+
+  images.forEach(src => {
+        const img = document.createElement('img');
+img.src = src;
+img.onclick = () => openImage(src);
+gallery.appendChild(img);
+  });
   }
 
   if(type === 'zemlya'){
     title.innerText = 'Земельные работы';
     text.innerText = 'Услуга «земляные работы вручную» — это комплекс мероприятий по разработке, перемещению и уплотнению грунта, выполняемый рабочими (землекопами) с использованием ручного инструмента (лопаты, кирки, ломы, тачки), без применения тяжелой техники. Это востребовано на участках с ограниченным доступом, при деликатных работах или малых объемах.';
+
+        const images = [
+    'img/zemlya1.jpg',
+    'img/zemlya2.jpg',
+    'img/zemlya3.jpg'
+  ];
+currentImages = images;
+
+  images.forEach(src => {
+      const img = document.createElement('img');
+img.src = src;
+img.onclick = () => openImage(src);
+gallery.appendChild(img);
+  });
   }
+
 
   if(type === 'uborka'){
     title.innerText = 'Уборка территории';
     text.innerText = 'Услуга уборки территории дворниками — это клининговая услуга по санитарному содержанию прилегающих участков, тротуаров, дворов и парковок, выполняемая персоналом (дворниками) с использованием ручного инвентаря: лопат, метел, граблей, ведер и тачек.';
+  
+     const images = [
+    'img/uborka1.jpg',
+    'img/uborka2.jpg',
+    'img/uborka3.jpg'
+  ];
+currentImages = images;
+
+  images.forEach(src => {
+    const img = document.createElement('img');
+img.src = src;
+img.onclick = () => openImage(src);
+gallery.appendChild(img);
+  });
   }
 
   if(type === 'fasovka'){
     title.innerText = 'Фасовщики';
     text.innerText = 'Услуга фасовщиков — это профессиональная деятельность по взвешиванию, дозированию, сортировке и упаковке товаров (сырья, готовой продукции) из крупных партий в мелкую потребительскую тару (пакеты, коробки, флаконы). Фасовщики обеспечивают подготовку товаров к продаже, маркировку, соблюдение весовых стандартов и складской учет, предотвращая пересорт.';
+       const images = [
+    'img/fasovka1.jpg',
+    'img/fasovka2.jpg',
+    'img/fasovka3.jpg'
+  ];
+currentImages = images;
+
+  images.forEach(src => {
+    const img = document.createElement('img');
+img.src = src;
+img.onclick = () => openImage(src);
+gallery.appendChild(img);
+  });
   }
 
     if(type === 'clining'){
     title.innerText = 'Клининг';
     text.innerText = 'Клининг — это профессиональная уборка помещений, которую выполняют обученные специалисты, а не сами жильцы или штатные уборщицы. По-простому: это когда вы вызываете людей со своей химией и техникой, которые быстро и качественно отмывают квартиру до блеска.';
+         const images = [
+    'img/clining1.jpg',
+    'img/clining2.jpg',
+    'img/clining3.jpg'
+  ];
+currentImages = images;
+
+  images.forEach(src => {
+    const img = document.createElement('img');
+img.src = src;
+img.onclick = () => openImage(src);
+gallery.appendChild(img);
+  });
   }
 
   if(type === 'master'){
     title.innerText = 'Мастер на час';
     text.innerText = 'Мастер на час (или «муж на час») — это сервис вызова универсального специалиста для мелкого бытового ремонта и хозяйственных работ, с которыми трудно справиться самостоятельно. Это мастер широкого профиля, способный починить розетку, собрать мебель, повесить карниз или устранить течь в кране.';
+           const images = [
+    'img/master1.jpg',
+    'img/master2.jpg',
+    'img/master3.jpg'
+  ];
+currentImages = images;
+
+  images.forEach(src => {
+    const img = document.createElement('img');
+img.src = src;
+img.onclick = () => openImage(src);
+gallery.appendChild(img);
+  });
   }
 
   if(type === 'demontag'){
     title.innerText = 'Демонтажные работы';
     text.innerText = 'Демонтажные работы только рабочими» (или ручной демонтаж) — это способ разборки конструкций, при котором используется исключительно физический труд людей с применением ручного или электроинструмента (отбойные молотки, перфораторы, болгарки, кувалды, ломы), без привлечения тяжелой техники типа экскаваторов.';
+             const images = [
+    'img/demontag1.jpg',
+    'img/demontag2.jpg',
+    'img/demontag3.jpg'
+  ];
+currentImages = images;
+
+  images.forEach(src => {
+    const img = document.createElement('img');
+img.src = src;
+img.onclick = () => openImage(src);
+gallery.appendChild(img);
+  });
   }
 
   modal.style.display = 'flex';
@@ -750,6 +948,44 @@ function autoScrollReviews(){
 
 // плавная бесконечная прокрутка
 setInterval(autoScrollReviews, 20);
+
+let currentImages = [];
+let currentIndex = 0;
+function openImage(src){
+  const viewer = document.getElementById('img-viewer');
+  const img = document.getElementById('img-full');
+
+  currentIndex = currentImages.indexOf(src);
+
+  img.src = src;
+  viewer.style.display = 'flex';
+}
+
+function closeImage(){
+  document.getElementById('img-viewer').style.display = 'none';
+}
+
+function nextImage(){
+  if(currentImages.length === 0) return;
+
+  currentIndex++;
+  if(currentIndex >= currentImages.length){
+    currentIndex = 0;
+  }
+
+  document.getElementById('img-full').src = currentImages[currentIndex];
+}
+
+function prevImage(){
+  if(currentImages.length === 0) return;
+
+  currentIndex--;
+  if(currentIndex < 0){
+    currentIndex = currentImages.length - 1;
+  }
+
+  document.getElementById('img-full').src = currentImages[currentIndex];
+}
 </script>
 
 </body>
