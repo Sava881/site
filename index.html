@@ -1,30 +1,976 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Рабочий Обзор — Аутсорсинг</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Форма заказа рабочего</title>
 
-  <meta property="og:title" content="Рабочий Обзор — Аутсорсинг">
-<meta property="og:description" content="Грузчики, разнорабочие, демонтаж, уборка. Быстро и без лишних разговоров.">
-<meta property="og:image" content="https://sava881.github.io/site/img/logo.jpg">
-<meta property="og:url" content="https://sava881.github.io/site/">
-<meta property="og:type" content="website">
+<link rel="stylesheet" href="customer-orders-sync/customer-orders-sync.css">
+<style>
+:root {
+  --blue:#0088cc;
+  --blue2:#00aaff;
+  --violet:#7c4dff;
+  --dark:#071a34;
+  --text:#0f172a;
+  --muted:#64748b;
+  --line:#dbe6f2;
+  --green:#16a34a;
+  --danger:#dc2626;
+  --shadow:0 18px 44px rgba(15, 23, 42, .10);
+}
 
-  <!-- ШРИФТ -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+* {
+  box-sizing:border-box
+}
 
-  <style>
-    * {margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+html, body {
+  min-height:100%;
+  overflow-x:hidden
+}
 
-    body {
-      background:lab(18.33% -6.58 -8.7 / 0.947);
+body.chat-open {
+  height:100dvh;
+  overflow:hidden;
+}
+
+body {
+  margin:0;
+  font-family:Arial, sans-serif;
+  color:var(--text);
+  background:radial-gradient(circle at top left, rgba(0, 170, 255, .12), transparent 26%), radial-gradient(circle at top right, rgba(124, 77, 255, .12), transparent 22%), linear-gradient(180deg, #f4f7fb 0%, #eef4fb 100%);
+}
+
+button, input, select, textarea {
+  font-family:inherit
+}
+
+button {
+  cursor:pointer
+}
+
+.hidden {
+  display:none!important
+}
+
+.app {
+  max-width:860px;
+  margin:0 auto;
+  min-height:100dvh;
+  padding-bottom:114px
+}
+
+body.chat-open .app {
+  height:100dvh;
+  min-height:100dvh;
+  padding-bottom:0;
+  overflow:hidden;
+}
+
+.app-logo {
+  position:fixed;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:860px;
+  z-index:1200;
+  text-align:center;
+  padding:15px 16px calc(15px + env(safe-area-inset-top, 0px));
+  font-weight:800;
+  font-size:20px;
+  letter-spacing:.2px;
+  color:white;
+  background:linear-gradient(135deg, var(--blue), var(--blue2));
+  box-shadow:0 8px 24px rgba(0, 136, 204, .20);
+}
+
+body.chat-open .app-logo,
+body.overview-open .app-logo {
+  display:none;
+}
+
+.screen {
+  display:none;
+  padding:14px;
+  animation:fadeIn .22s ease
+}
+
+.screen.active {
+  display:block
+}
+
+#create.screen.active,
+#orders.screen.active {
+  padding-top:calc(66px + env(safe-area-inset-top, 0px));
+}
+
+@keyframes fadeIn {
+  from {
+    opacity:0;
+    transform:translateY(5px)
+  }
+  to {
+    opacity:1;
+    transform:translateY(0)
+  }
+}
+
+.hero {
+  padding:22px;
+  border-radius:24px;
+  color:#fff;
+  overflow:hidden;
+  position:relative;
+  margin-bottom:14px;
+  background:radial-gradient(circle at top right, rgba(255, 255, 255, .22), transparent 32%), linear-gradient(135deg, #071a34 0%, #0b4f82 52%, #7c4dff 100%);
+  box-shadow:0 24px 54px rgba(15, 23, 42, .22);
+}
+
+.hero:after {
+  content:"";
+  position:absolute;
+  right:-40px;
+  top:-50px;
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  background:rgba(255, 255, 255, .10)
+}
+
+.hero-kicker {
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.14em;
+  opacity:.76;
+  text-transform:uppercase;
+  margin-bottom:8px
+}
+
+.hero-title {
+  font-size:25px;
+  line-height:1.1;
+  font-weight:800;
+  margin-bottom:8px;
+  position:relative;
+  z-index:1
+}
+
+.hero-sub {
+  font-size:14px;
+  line-height:1.45;
+  opacity:.88;
+  position:relative;
+  z-index:1
+}
+
+.card {
+  background:linear-gradient(180deg, #fff 0%, #f8fbff 100%);
+  border:1px solid rgba(208, 220, 235, .95);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+
+.card:before, .order-card:before {
+  content:"";
+  position:absolute;
+  inset:0 0 auto 0;
+  height:4px;
+  background:linear-gradient(90deg, var(--blue2), var(--blue), var(--violet))
+}
+
+.section-title {
+  font-size:18px;
+  font-weight:800;
+  margin:4px 2px 10px
+}
+
+.section-sub {
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.45;
+  margin:-4px 2px 14px
+}
+
+.field {
+  margin-bottom:12px
+}
+
+.field label {
+  display:block;
+  font-size:12px;
+  font-weight:800;
+  color:#41556e;
+  margin-bottom:6px
+}
+
+.field input, .field select, .field textarea {
+  width:100%;
+  border:1px solid #d9e5f1;
+  background:#fff;
+  border-radius:13px;
+  padding:12px;
+  font-size:14px;
+  outline:none;
+  margin:0;
+  color:var(--text)
+}
+
+.field textarea {
+  min-height:110px;
+  resize:vertical
+}
+
+.field input:focus, .field select:focus, .field textarea:focus {
+  box-shadow:0 0 0 3px rgba(0, 136, 204, .12);
+  border-color:#aad5ef
+}
+
+.form-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px
+}
+
+.help {
+  font-size:11px;
+  color:#64748b;
+  margin-top:6px;
+  line-height:1.35
+}
+
+.error-text {
+  font-size:12px;
+  color:var(--danger);
+  font-weight:700;
+  margin-top:6px;
+  display:none
+}
+
+.field.error input, .field.error select, .field.error textarea {
+  border-color:#fca5a5;
+  box-shadow:0 0 0 3px rgba(220, 38, 38, .08)
+}
+
+.field.error .error-text {
+  display:block
+}
+
+.btn {
+  border:none;
+  border-radius:14px;
+  padding:13px 14px;
+  font-size:14px;
+  font-weight:800;
+  color:#fff;
+  background:linear-gradient(135deg, var(--blue), var(--blue2));
+  box-shadow:0 10px 22px rgba(0, 136, 204, .22);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  text-decoration:none
+}
+
+.btn.dark {
+  width:100%;
+  background:linear-gradient(135deg, #071a34, #0b75b8, #7c4dff)
+}
+
+.btn.ghost {
+  background:#eff6ff;
+  color:#0f4c81;
+  border:1px solid #d8e8f8;
+  box-shadow:none
+}
+
+.btn.danger {
+  background:linear-gradient(135deg, #ef4444, #dc2626)
+}
+
+.btn:active {
+  transform:scale(.98)
+}
+
+.btn svg {
+  width:18px;
+  height:18px;
+  stroke-width:2.4
+}
+
+.order-card {
+  background:linear-gradient(180deg, #fff 0%, #f7faff 100%);
+  border:1px solid #d8e3ee;
+  border-radius:18px;
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:0 14px 34px rgba(15, 23, 42, .10);
+  position:relative;
+  overflow:hidden
+}
+
+.order-card-finishing{
+  position:relative;
+}
+
+.order-card-finishing .order-card-content{
+  filter:blur(5px);
+  pointer-events:none;
+  user-select:none;
+}
+
+.finish-confirm-box{
+  position:absolute;
+  inset:16px;
+  margin:auto;
+  max-width:320px;
+  height:max-content;
+  z-index:5;
+  background:white;
+  border:1px solid #dbe6f2;
+  border-radius:22px;
+  padding:18px;
+  text-align:center;
+  box-shadow:0 24px 60px rgba(15,23,42,.28);
+}
+
+.finish-confirm-title{
+  font-size:18px;
+  font-weight:900;
+  color:#0f172a;
+  margin-bottom:8px;
+}
+
+.finish-confirm-text{
+  font-size:13px;
+  line-height:1.45;
+  color:#64748b;
+  margin-bottom:14px;
+}
+
+.finish-confirm-admin{
+  padding:10px;
+  border-radius:14px;
+  background:#f0fbf4;
+  border:1px solid #cdebd6;
+  font-size:13px;
+  font-weight:800;
+  color:#0f172a;
+  margin-bottom:14px;
+}
+
+.cancel-modal{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  background:rgba(2,10,23,.55);
+  backdrop-filter:blur(8px);
+  z-index:5000;
+}
+
+.cancel-modal.open{
+  display:flex;
+}
+
+.cancel-box{
+  width:min(100%,340px);
+  background:white;
+  border-radius:24px;
+  padding:20px;
+  text-align:center;
+  box-shadow:0 24px 70px rgba(15,23,42,.32);
+  animation:cancelPop .25s ease;
+}
+
+@keyframes cancelPop{
+  from{opacity:0;transform:scale(.92) translateY(10px);}
+  to{opacity:1;transform:scale(1) translateY(0);}
+}
+
+.cancel-title{
+  font-size:19px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.cancel-text{
+  font-size:13px;
+  color:#64748b;
+  line-height:1.45;
+  margin-bottom:16px;
+}
+
+.cancel-actions{
+  display:flex;
+  gap:10px;
+}
+
+.cancel-actions .btn{
+  flex:1;
+}
+
+.cancel-sent-loader{
+  width:44px;
+  height:44px;
+  border:4px solid #dbeafe;
+  border-top-color:#0088cc;
+  border-radius:50%;
+  margin:0 auto 14px;
+  animation:priceSpin .8s linear infinite;
+}
+
+.order-top {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px
+}
+
+.order-desc-label {
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  color:#7b8a9d;
+  font-weight:800;
+  margin:10px 0 4px;
+}
+
+.pill {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:11px;
+  font-weight:800;
+  white-space:nowrap;
+  background:#eef6ff;
+  color:#1d4ed8
+}
+
+.order-desc {
+  max-width:100%;
+  overflow:hidden;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  white-space:normal;
+
+  font-size:14px;
+  font-weight:500;
+  color:#475569;
+  line-height:1.5;
+  margin:10px 0 12px;
+
+  background:#f8fbff;
+  border:1px solid #e3ebf3;
+  border-radius:14px;
+  padding:10px 12px;
+}
+
+.meta-grid {
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:8px;
+  margin-top:10px
+}
+
+.meta {
+  background:#f6f9fc;
+  border:1px solid #e3ebf3;
+  border-radius:13px;
+  padding:9px
+}
+
+.meta-label {
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  color:#7b8a9d;
+  margin-bottom:4px
+}
+
+.meta-value {
+  font-size:13px;
+  font-weight:800;
+  word-break:break-word
+}
+
+.price-wait {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:#64748b;
+  font-size:12px;
+  font-weight:700;
+  line-height:1.35;
+}
+
+.price-loader {
+  width:14px;
+  height:14px;
+  border:2px solid #dbe6f2;
+  border-top-color:#0088cc;
+  border-radius:50%;
+  flex:0 0 auto;
+  animation:priceSpin .8s linear infinite;
+}
+
+.order-price-ready {
+  color:#16a34a;
+  font-size:15px;
+  font-weight:900;
+}
+
+@keyframes priceSpin {
+  to {
+    transform:rotate(360deg);
+  }
+}
+
+.datetime-picker {
+  position:relative;
+}
+
+.datetime-trigger {
+  width:100%;
+  min-height:54px;
+  border:1px solid #d9e5f1;
+  background:#fff;
+  border-radius:16px;
+  padding:12px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  font-size:14px;
+  font-weight:800;
+  color:#0f172a;
+}
+
+.datetime-trigger span {
+  color:#64748b;
+  font-weight:700;
+}
+
+.datetime-picker.open .datetime-trigger {
+  border-color:#aad5ef;
+  box-shadow:0 0 0 3px rgba(0, 136, 204, .12);
+}
+
+.datetime-menu {
+  display:none;
+  margin-top:8px;
+  padding:12px;
+  background:#fff;
+  border:1px solid #dbe6f2;
+  border-radius:20px;
+  box-shadow:0 18px 44px rgba(15, 23, 42, .16);
+}
+
+.datetime-picker.open .datetime-menu {
+  display:block;
+}
+
+.datetime-title {
+  font-size:13px;
+  font-weight:900;
+  color:#41556e;
+  margin-bottom:8px;
+}
+
+.manual-datetime-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.manual-datetime-grid input {
+  width:100%;
+  border:1px solid #d9e5f1;
+  background:#fff;
+  border-radius:13px;
+  padding:12px;
+  font-size:14px;
+  outline:none;
+  color:var(--text);
+}
+
+.manual-datetime-grid input:focus {
+  box-shadow:0 0 0 3px rgba(0, 136, 204, .12);
+  border-color:#aad5ef;
+}
+
+@media(max-width:720px) {
+  .manual-datetime-grid {
+    grid-template-columns:1fr;
+  }
+}
+
+.date-options,
+.time-options {
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.date-option,
+.time-option {
+  border:none;
+  border-radius:14px;
+  padding:11px 8px;
+  background:#f8fbff;
+  color:#0f172a;
+  font-size:13px;
+  font-weight:900;
+}
+
+.date-option.active,
+.time-option.active {
+  color:white;
+  background:linear-gradient(135deg, var(--blue), var(--blue2));
+}
+
+@media(max-width:720px) {
+  .date-options,
+  .time-options {
+    grid-template-columns:repeat(2, 1fr);
+  }
+}
+
+.city-picker {
+  position:relative;
+}
+
+.city-trigger {
+  width:100%;
+  min-height:50px;
+  border:1px solid #d9e5f1;
+  background:#fff;
+  border-radius:16px;
+  padding:12px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  font-size:14px;
+  font-weight:800;
+  color:#0f172a;
+}
+
+.city-trigger span {
+  color:#64748b;
+  font-weight:700;
+}
+
+.city-picker.open .city-trigger {
+  border-color:#aad5ef;
+  box-shadow:0 0 0 3px rgba(0, 136, 204, .12);
+}
+
+.city-arrow {
+  font-size:18px;
+  color:#64748b;
+  transition:.2s;
+}
+
+.city-picker.open .city-arrow {
+  transform:rotate(180deg);
+}
+
+.city-menu {
+  display:none;
+  margin-top:8px;
+  padding:8px;
+  background:#fff;
+  border:1px solid #dbe6f2;
+  border-radius:18px;
+  box-shadow:0 18px 44px rgba(15, 23, 42, .16);
+}
+
+.city-picker.open .city-menu {
+  display:grid;
+  gap:6px;
+}
+
+.city-option {
+  border:none;
+  width:100%;
+  padding:13px 14px;
+  border-radius:13px;
+  text-align:left;
+  background:#f8fbff;
+  color:#0f172a;
+  font-size:14px;
+  font-weight:800;
+}
+
+.city-option.active {
+  color:white;
+  background:linear-gradient(135deg, var(--blue), var(--blue2));
+}
+
+.workers-picker {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px;
+  border:1px solid #d9e5f1;
+  background:#fff;
+  border-radius:16px;
+}
+
+.workers-btn {
+  width:44px;
+  height:44px;
+  border:none;
+  border-radius:14px;
+  font-size:24px;
+  font-weight:900;
+  color:#0f4c81;
+  background:#eff6ff;
+  box-shadow:none;
+}
+
+.workers-value {
+  flex:1;
+  text-align:center;
+  font-size:18px;
+  font-weight:900;
+  color:#0f172a;
+}
+
+.workers-value span {
+  display:block;
+  font-size:11px;
+  font-weight:800;
+  color:#64748b;
+  margin-top:2px;
+}
+
+.order-actions {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px
+}
+
+.empty {
+  padding:18px;
+  text-align:center;
+  color:var(--muted);
+  border:1px dashed #d9e5f1;
+  border-radius:18px;
+  background:#fff;
+  font-size:13px
+}
+
+.navbar {
+  position:fixed;
+  bottom:12px;
+  left:50%;
+  transform:translateX(-50%);
+  width:95%;
+  max-width:420px;
+  background:#fff;
+  border-radius:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 12px;
+  box-shadow:0 6px 20px rgba(0, 0, 0, .12);
+  z-index:999;
+  gap:8px
+}
+
+.nav-item {
+  flex:1;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:8px 4px;
+  border-radius:14px;
+  font-size:12px;
+  font-weight:800;
+  color:#555;
+  transition:.2s;
+  position:relative
+}
+
+.nav-item svg {
+  width:24px;
+  height:24px;
+  margin-bottom:3px;
+  stroke-width:2.2
+}
+
+.nav-item.active {
+  background:linear-gradient(135deg, var(--blue), var(--blue2));
+  color:white;
+  transform:scale(1.06);
+  box-shadow:0 4px 12px rgba(0, 136, 204, .30)
+}
+
+.badge {
+  position:absolute;
+  right:14px;
+  top:5px;
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#25D366;
+  color:white;
+  font-size:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 4px 12px rgba(37, 211, 102, .28)
+}
+
+.toast {
+  position:fixed;
+  left:50%;
+  bottom:98px;
+  transform:translateX(-50%) translateY(20px);
+  background:#0f172a;
+  color:#fff;
+  border-radius:999px;
+  padding:11px 16px;
+  font-size:13px;
+  z-index:2000;
+  opacity:0;
+  pointer-events:none;
+  transition:.25s;
+  max-width:calc(100% - 28px);
+  text-align:center
+}
+
+.toast.show {
+  opacity:1;
+  transform:translateX(-50%) translateY(0)
+}
+
+.success-overlay {
+  position:fixed;
+  inset:0;
+  z-index:3000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(2, 10, 23, .48);
+  backdrop-filter:blur(8px);
+  padding:18px
+}
+
+.success-overlay.show {
+  display:flex
+}
+
+.success-card {
+  width:min(100%, 340px);
+  background:linear-gradient(180deg, #fff, #f8fbff);
+  border:1px solid #dbe6f2;
+  border-radius:26px;
+  padding:28px 22px;
+  text-align:center;
+  box-shadow:0 28px 80px rgba(2, 10, 23, .34);
+  animation:successPop .38s ease
+}
+
+.success-check {
+  width:92px;
+  height:92px;
+  border-radius:50%;
+  margin:0 auto 16px;
+  background:linear-gradient(135deg, #22c55e, #16a34a);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 16px 34px rgba(22, 163, 74, .32);
+  animation:successScale .5s ease
+}
+
+.success-check svg {
+  width:52px;
+  height:52px;
+  stroke:#fff;
+  stroke-width:3.6;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-dasharray:60;
+  stroke-dashoffset:60;
+  animation:successDraw .55s ease .18s forwards
+}
+
+.success-title {
+  font-size:20px;
+  font-weight:800;
+  color:#0f172a;
+  margin-bottom:6px
+}
+
+.success-text {
+  font-size:13px;
+  line-height:1.45;
+  color:#64748b
+}
+
+@keyframes successPop {
+  from {
+    opacity:0;
+    transform:translateY(16px) scale(.94)
+  }
+  to {
+    opacity:1;
+    transform:translateY(0) scale(1)
+  }
+}
+
+@keyframes successScale {
+  0% {
+    transform:scale(.72)
+  }
+  70% {
+    transform:scale(1.08)
+  }
+  100% {
+    transform:scale(1)
+  }
+}
+
+@keyframes successDraw {
+  to {
+    stroke-dashoffset:0
+  }
+}
+
+/* ===== OVERVIEW SITE START ===== */
+.overview-site * {
+margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;
+}
+
+.overview-site {
+background:lab(18.33% -6.58 -8.7 / 0.947);
       color:#ffffff;
       overflow-x:hidden;
-    }
+}
 
-    header {
-      padding:8px;
+.overview-site header {
+padding:8px;
       display:flex;
       justify-content:space-between;
       align-items:center;
@@ -33,54 +979,54 @@
       position:sticky;
       top:0;
       z-index:10;
-    }
+}
 
-    .logo {
-      font-weight:800;
+.overview-site .logo {
+font-weight:800;
       font-size:20px;
       color:#f6f2f2da;
-    }
+}
 
-    .phone {
-      background:#22c55e;
+.overview-site .phone {
+background:#22c55e;
       padding:10px 16px;
       border-radius:10px;
       text-decoration:none;
       color:#fff;
       font-weight:600;
-    }
+}
 
-    .hero {
-      padding:40px 20px;
+.overview-site .hero {
+padding:40px 20px;
       text-align:center;
-    }
+}
 
-    .hero h1 {
-      font-size:28px;
+.overview-site .hero h1 {
+font-size:28px;
       margin-bottom:10px;
-    }
+}
 
-    .hero p {
-      opacity:0.7;
-    }
+.overview-site .hero p {
+opacity:0.7;
+}
 
-    .services {
-      padding:20px;
-    }
+.overview-site .services {
+padding:20px;
+}
 
-    .services h2 {
-      margin-bottom:15px;
-    }
+.overview-site .services h2 {
+margin-bottom:15px;
+}
 
-    .scroll {
-      display:flex;
+.overview-site .scroll {
+display:flex;
       gap:15px;
       overflow-x:auto;
       padding-bottom:10px;
-    }
+}
 
-.card {
-  min-width:260px;
+.overview-site .card {
+min-width:260px;
   flex: 0 0 260px;   /* ВОТ ЭТО ФИКСИТ СКРОЛЛ */
 
   background:#336328aa;
@@ -93,31 +1039,31 @@
   flex-direction:column;
 }
 
-    .card:hover {
-      transform:translateY(-5px) scale(1.02);
-    }
+.overview-site .card:hover {
+transform:translateY(-5px) scale(1.02);
+}
 
-.card img {
-  width:100%;
+.overview-site .card img {
+width:100%;
   height:160px;        /* фикс высоты */
   object-fit:cover;    /* ключ! */
   border-radius:10px;
   margin-bottom:10px;
 }
 
-    .card h3 {
-      font-size:16px;
+.overview-site .card h3 {
+font-size:16px;
       margin-bottom:5px;
-    }
+}
 
-    .price {
-      margin:8px 0;
+.overview-site .price {
+margin:8px 0;
       font-weight:600;
       color:#29dd6b;
-    }
+}
 
-    .btn {
-      display:block;
+.overview-site .btn {
+display:block;
       text-align:center;
       padding:10px;
       background:#38bdf8;
@@ -125,31 +1071,31 @@
       text-decoration:none;
       color:#000;
       font-weight:600;
-    }
+}
 
-    .contacts {
-      padding:30px 20px;
+.overview-site .contacts {
+padding:30px 20px;
       text-align:center;
-    }
+}
 
-    .messengers a {
-      margin:5px;
+.overview-site .messengers a {
+margin:5px;
       display:inline-block;
       padding:10px 14px;
       border-radius:10px;
       background:#334155;
       text-decoration:none;
       color:#fff;
-    }
+}
 
-    footer {
-      padding:20px;
+.overview-site footer {
+padding:20px;
       text-align:center;
       opacity:0.5;
-    }
+}
 
-    .info-btn {
-  margin-top:8px;
+.overview-site .info-btn {
+margin-top:8px;
   padding:8px;
   width:100%;
   background:hsla(0, 98%, 17%, 0.548);
@@ -160,12 +1106,12 @@
   transition:0.3s;
 }
 
-.info-btn:hover {
-  background:#475569;
+.overview-site .info-btn:hover {
+background:#475569;
 }
 
-.modal {
-  display:none;
+.overview-site .modal {
+display:none;
   position:fixed;
   top:0;
   left:0;
@@ -177,106 +1123,106 @@
   z-index:100;
 }
 
-.modal-content {
-  background:#1e293b;
+.overview-site .modal-content {
+background:#1e293b;
   padding:20px;
   border-radius:16px;
   max-width:400px;
   width:90%;
 }
 
-.close {
-  float:right;
+.overview-site .close {
+float:right;
   font-size:24px;
   cursor:pointer;
 }
 
-.card-bottom {
-  margin-top:auto;   /* ВАЖНО — прижимает вниз */
+.overview-site .card-bottom {
+margin-top:auto;   /* ВАЖНО — прижимает вниз */
 }
 
-.card p {
-  max-height:42px;
+.overview-site .card p {
+max-height:42px;
   overflow:auto;
   font-size:14px;
   line-height:1.3;
 }
 
-.about {
-  padding:30px 20px;
+.overview-site .about {
+padding:30px 20px;
 }
 
-.about h2 {
-  margin-bottom:15px;
+.overview-site .about h2 {
+margin-bottom:15px;
 }
 
-.about-box {
-  background:rgba(255,255,255,0.05);
+.overview-site .about-box {
+background:rgba(255,255,255,0.05);
   padding:15px;
   border-radius:12px;
   margin-bottom:20px;
   backdrop-filter: blur(10px);
 }
 
-.about-box p {
-  opacity:0.8;
+.overview-site .about-box p {
+opacity:0.8;
   font-size:14px;
   line-height:1.5;
 }
 
-.about-grid {
-  display:flex;
+.overview-site .about-grid {
+display:flex;
   gap:15px;
   flex-wrap:wrap;
 }
 
-.about-card {
-  flex:1;
+.overview-site .about-card {
+flex:1;
   min-width:240px;
   background:#1e293b;
   padding:15px;
   border-radius:12px;
 }
 
-.about-card h3 {
-  margin-bottom:10px;
+.overview-site .about-card h3 {
+margin-bottom:10px;
 }
 
-.about-card ul {
-  padding-left:15px;
+.overview-site .about-card ul {
+padding-left:15px;
   font-size:14px;
   opacity:0.9;
 }
 
-.about-card li {
-  margin-bottom:5px;
+.overview-site .about-card li {
+margin-bottom:5px;
 }
 
-.plus {
-  border:1px solid #22c55e55;
+.overview-site .plus {
+border:1px solid #22c55e55;
 }
 
-.minus {
-  border:1px solid #ef444455;
+.overview-site .minus {
+border:1px solid #ef444455;
 }
 
-.steps {
-  padding:30px 20px;
+.overview-site .steps {
+padding:30px 20px;
 }
 
-.steps h2 {
-  margin-bottom:20px;
+.overview-site .steps h2 {
+margin-bottom:20px;
   text-align:center;
 }
 
-.steps-grid {
-  display:flex;
+.overview-site .steps-grid {
+display:flex;
   gap:15px;
   flex-wrap:wrap;
 }
 
-.step {
-  flex:1;
+.overview-site .step {
+flex:1;
   min-width:240px;
   background:#1e293b;
   border-radius:12px;
@@ -288,42 +1234,41 @@
   transition:0.5s;
 }
 
-.step.active {
-  opacity:1;
+.overview-site .step.active {
+opacity:1;
   transform:translateY(0);
 }
 
-.step-number {
-  font-size:28px;
+.overview-site .step-number {
+font-size:28px;
   font-weight:800;
   color:#22c55e;
   margin-bottom:10px;
 }
 
-.step p {
-  font-size:14px;
+.overview-site .step p {
+font-size:14px;
   opacity:0.8;
 }
 
-.reviews {
-  padding:30px 20px;
+.overview-site .reviews {
+padding:30px 20px;
 }
 
-.reviews h2 {
-  text-align:center;
+.overview-site .reviews h2 {
+text-align:center;
   margin-bottom:20px;
 }
 
-.reviews-scroll {
-  display:flex;
+.overview-site .reviews-scroll {
+display:flex;
   gap:15px;
   overflow-x:auto;
   padding-bottom:10px;
-  
 }
 
-.review {
-  min-width:260px;
+.overview-site .review {
+min-width:260px;
   flex:0 0 260px;
 
   background:#1e293b;
@@ -335,45 +1280,45 @@
   transition:0.5s;
 }
 
-.review.active {
-  opacity:1;
+.overview-site .review.active {
+opacity:1;
   transform:translateY(0);
 }
 
-.review-top {
-  display:flex;
+.overview-site .review-top {
+display:flex;
   align-items:center;
   gap:10px;
   margin-bottom:10px;
 }
 
-.review-top img {
-  width:40px;
+.overview-site .review-top img {
+width:40px;
   height:40px;
   border-radius:50%;
   object-fit:cover;
 }
 
-.review-name {
-  font-size:14px;
+.overview-site .review-name {
+font-size:14px;
   font-weight:600;
 }
 
-.review-text {
-  font-size:13px;
+.overview-site .review-text {
+font-size:13px;
   opacity:0.8;
   line-height:1.4;
 }
 
-.modal-gallery {
-  margin-top:15px;
+.overview-site .modal-gallery {
+margin-top:15px;
   display:flex;
   gap:10px;
   overflow-x:auto;
 }
 
-.modal-gallery img {
-  width:120px;
+.overview-site .modal-gallery img {
+width:120px;
   height:90px;
   object-fit:cover;
   border-radius:8px;
@@ -382,12 +1327,12 @@
   transition:0.3s;
 }
 
-.modal-gallery img:hover {
-  transform:scale(1.05);
+.overview-site .modal-gallery img:hover {
+transform:scale(1.05);
 }
 
-.img-viewer {
-  display:none;
+.overview-site .img-viewer {
+display:none;
   position:fixed;
   top:0;
   left:0;
@@ -399,14 +1344,14 @@
   z-index:999;
 }
 
-.img-viewer img {
-  max-width:90%;
+.overview-site .img-viewer img {
+max-width:90%;
   max-height:90%;
   border-radius:10px;
 }
 
-.img-close {
-  position:absolute;
+.overview-site .img-close {
+position:absolute;
   top:20px;
   right:25px;
   font-size:30px;
@@ -414,9 +1359,9 @@
   cursor:pointer;
 }
 
-.img-prev,
-.img-next {
-  position:absolute;
+.overview-site .img-prev,
+.overview-site .img-next {
+position:absolute;
   top:50%;
   transform:translateY(-50%);
   font-size:40px;
@@ -426,46 +1371,536 @@
   user-select:none;
 }
 
-.img-prev { left:20px; }
-.img-next { right:20px; }
-
-.img-prev:hover,
-.img-next:hover,
-.img-close:hover {
-  opacity:0.7;
+.overview-site .img-prev {
+left:20px;
 }
-  </style>
 
-<div id="modal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">×</span>
-    <h2 id="modal-title"></h2>
-    <p id="modal-text"></p>
-    <div class="modal-gallery" id="modal-gallery"></div>
-  </div>
-</div>
+.overview-site .img-next {
+right:20px;
+}
 
-<!-- 🔽 FULLSCREEN КАРТИНКА -->
-<div id="img-viewer" class="img-viewer">
-  
-  <!-- ❌ КРЕСТИК -->
-  <span class="img-close" onclick="closeImage()">×</span>
+.overview-site .img-prev:hover,
+.overview-site .img-next:hover,
+.overview-site .img-close:hover {
+opacity:0.7;
+}
 
-  <!-- ⬅️ СТРЕЛКА -->
-  <span class="img-prev" onclick="prevImage()">‹</span>
+#overview.screen.active {
+  padding-top:0;
+}
 
-  <!-- КАРТИНКА -->
-  <img id="img-full" src="">
+/* Показываем шапку визитки в разделе Обзор */
+body.overview-open .overview-site header {
+  display:flex;
+}
 
-  <!-- ➡️ СТРЕЛКА -->
-  <span class="img-next" onclick="nextImage()">›</span>
+body.overview-open .overview-site .logo {
+  display:block;
+}
 
-</div>
 
+/* Точная шапка визитки внутри раздела Обзор */
+#overview.screen.active {
+  padding:0;
+}
+
+body.overview-open .app {
+  padding-bottom:0;
+}
+
+#overview .overview-site {
+  padding-top:58px;
+  padding-bottom:130px;
+  min-height:100dvh;
+}
+
+#overview .overview-site header {
+  position:fixed;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:860px;
+  z-index:1201;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px;
+  background:rgba(0, 0, 0, 0.082);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  box-shadow:none;
+  border-radius:0;
+}
+
+#overview .overview-site .logo {
+  display:block;
+  position:static;
+  top:auto;
+  left:auto;
+  transform:none;
+  width:auto;
+  max-width:none;
+  z-index:auto;
+  text-align:left;
+  padding:0;
+  background:none;
+  box-shadow:none;
+  letter-spacing:normal;
+  font-weight:800;
+  font-size:20px;
+  color:#f6f2f2da;
+}
+
+#overview .overview-site .phone {
+  display:inline-block;
+  background:#22c55e;
+  padding:10px 16px;
+  border-radius:10px;
+  text-decoration:none;
+  color:#fff;
+  font-weight:600;
+}
+
+/* Fix conflicts between app styles and overview site styles */
+.overview-site .logo {
+  position:static;
+  top:auto;
+  left:auto;
+  transform:none;
+  width:auto;
+  max-width:none;
+  z-index:auto;
+  text-align:left;
+  padding:0;
+  background:none;
+  box-shadow:none;
+  letter-spacing:normal;
+}
+
+.overview-site .hero {
+  color:#fff;
+  border-radius:0;
+  overflow:visible;
+  position:static;
+  margin-bottom:0;
+  background:none;
+  box-shadow:none;
+}
+
+.overview-site .hero:after,
+.overview-site .card:before {
+  display:none;
+}
+
+.overview-site .card {
+  border:none;
+  box-shadow:none;
+  margin-bottom:0;
+  overflow:visible;
+}
+
+.overview-site .btn {
+  box-shadow:none;
+}
+
+#overview .overview-site .modal,
+#overview .overview-site .img-viewer {
+  color:#fff;
+}
+
+/* ===== OVERVIEW SITE END ===== */
+
+/* ===== CHAT START ===== */
+#chat.screen.active {
+  height:calc(100dvh - 98px - env(safe-area-inset-bottom, 0px));
+  padding:8px 10px 4px;
+  overflow:hidden;
+}
+
+.chat-shell {
+  height:100%;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border:1px solid rgba(208, 220, 235, .95);
+  border-radius:24px;
+  background:#efe7dd;
+  box-shadow:var(--shadow);
+  position:relative;
+}
+
+.chat-shell:before {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at top left, rgba(0, 170, 255, .10), transparent 28%), radial-gradient(circle at bottom right, rgba(124, 77, 255, .10), transparent 30%);
+  pointer-events:none;
+}
+
+.chat-header {
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  color:white;
+  background:linear-gradient(135deg, #071a34, #0b75b8, #7c4dff);
+}
+
+.chat-avatar {
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  font-size:18px;
+  font-weight:900;
+  background:linear-gradient(135deg, #22c55e, #16a34a);
+  box-shadow:0 8px 20px rgba(0, 0, 0, .18);
+}
+
+.chat-info {
+  min-width:0;
+  flex:1;
+}
+
+.chat-name {
+  font-size:15px;
+  font-weight:900;
+  line-height:1.2;
+}
+
+.chat-status {
+  margin-top:3px;
+  font-size:12px;
+  opacity:.84;
+}
+
+.chat-order-pill {
+  display:inline-flex;
+  align-items:center;
+  padding:7px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  white-space:nowrap;
+  color:#dff7ff;
+  background:rgba(255, 255, 255, .14);
+  border:1px solid rgba(255, 255, 255, .18);
+}
+
+.chat-messages {
+  position:relative;
+  z-index:1;
+  flex:1 1 0;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:16px 12px 12px;
+  scroll-behavior:smooth;
+}
+
+.chat-date {
+  width:max-content;
+  max-width:90%;
+  margin:0 auto 12px;
+  padding:6px 10px;
+  border-radius:999px;
+  color:#64748b;
+  background:rgba(255, 255, 255, .72);
+  border:1px solid rgba(219, 230, 242, .82);
+  font-size:11px;
+  font-weight:800;
+}
+
+.message-row {
+  display:flex;
+  margin:5px 0;
+}
+
+.message-row.admin {
+  justify-content:flex-start;
+}
+
+.message-row.client {
+  justify-content:flex-end;
+}
+
+.message-bubble {
+  display:inline-block;
+  width:auto;
+  max-width:75%;
+  min-width:42px;
+  padding:6px 8px 5px;
+  border-radius:8px;
+  font-size:14px;
+  line-height:1.28;
+  word-break:break-word;
+  white-space:normal;
+  box-shadow:0 1px 1px rgba(15, 23, 42, .12);
+}
+
+.message-text {
+  white-space:pre-wrap;
+}
+
+.message-row.admin .message-bubble {
+  color:#0f172a;
+  background:#fff;
+  border-bottom-left-radius:5px;
+}
+
+.message-row.client .message-bubble {
+  color:#06240f;
+  background:#d9fdd3;
+  border-bottom-right-radius:5px;
+}
+
+.message-time {
+  float:right;
+  margin:5px 0 0 10px;
+  font-size:10px;
+  line-height:1;
+  color:#667781;
+  font-weight:600;
+  opacity:.9;
+}
+
+.message-meta {
+  float:right;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin:5px 0 0 10px;
+  font-size:10px;
+  line-height:1;
+  color:#667781;
+  font-weight:600;
+  opacity:.95;
+}
+
+.message-checks {
+  letter-spacing:-2px;
+  color:#667781;
+  font-weight:900;
+}
+
+.message-checks.read {
+  color:#34b7f1;
+}
+
+.chat-quick {
+  position:relative;
+  z-index:1;
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:8px 10px 10px;
+  background:rgba(255, 255, 255, .54);
+  border-top:1px solid rgba(219, 230, 242, .72);
+}
+
+.chat-quick::-webkit-scrollbar {
+  display:none;
+}
+
+.quick-chip {
+  border:none;
+  flex:0 0 auto;
+  border-radius:999px;
+  padding:9px 12px;
+  font-size:12px;
+  font-weight:900;
+  color:#0f4c81;
+  background:rgba(255, 255, 255, .82);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  box-shadow:0 6px 16px rgba(15, 23, 42, .08);
+}
+
+.chat-input-area {
+  position:relative;
+  z-index:1;
+  flex:0 0 auto;
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+  padding:8px 10px 10px;
+  background:transparent;
+  border-top:none;
+}
+
+.chat-textbox-wrap {
+  flex:1;
+  min-width:0;
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+  padding:7px 10px;
+  border:1px solid rgba(217, 229, 241, .88);
+  border-radius:24px;
+  background:#fff;
+  box-shadow:0 8px 22px rgba(15, 23, 42, .08);
+}
+
+.chat-attach-btn {
+  width:32px;
+  height:32px;
+  border:none;
+  border-radius:50%;
+  flex:0 0 auto;
+  color:#64748b;
+  background:#f1f5f9;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.chat-attach-btn svg {
+  width:18px;
+  height:18px;
+}
+
+.chat-textbox {
+  width:100%;
+  height:22px;
+  max-height:72px;
+  min-height:22px;
+  border:none;
+  outline:none;
+  resize:none;
+  padding:6px 0;
+  font-size:14px;
+  line-height:1.35;
+  background:transparent;
+  color:var(--text);
+  overflow-y:auto;
+  box-sizing:border-box;
+}
+
+.chat-send-btn {
+  width:46px;
+  height:46px;
+  border:none;
+  border-radius:50%;
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  background:linear-gradient(135deg, #16a34a, #22c55e);
+  box-shadow:0 10px 24px rgba(22, 163, 74, .28);
+}
+
+.chat-send-btn:active, .quick-chip:active, .chat-attach-btn:active {
+  transform:scale(.96);
+}
+
+.chat-send-btn svg {
+  width:21px;
+  height:21px;
+  stroke-width:2.5;
+}
+/* ===== CHAT END ===== */
+
+@media(max-width:720px) {
+  .screen {
+    padding:12px 10px
+  }
+  #create.screen.active,
+  #orders.screen.active {
+    padding-top:calc(64px + env(safe-area-inset-top, 0px));
+  }
+  .hero {
+    padding:18px;
+    border-radius:20px
+  }
+  .hero-title {
+    font-size:22px
+  }
+  .form-grid, .meta-grid {
+    grid-template-columns:1fr
+  }
+  .navbar {
+    padding:10px 8px;
+    gap:6px
+  }
+  .nav-item {
+    font-size:11px
+  }
+  .nav-item svg {
+    width:22px;
+    height:22px
+  }
+  #chat.screen.active {
+    height:calc(100dvh - 94px - env(safe-area-inset-bottom, 0px));
+    padding:6px 8px 4px;
+    overflow:hidden
+  }
+  .chat-shell {
+    height:100%;
+    min-height:0;
+    border-radius:20px
+  }
+
+.chat-messages {
+  min-height:0;
+}
+
+  .chat-header {
+    padding:12px
+  }
+  .chat-avatar {
+    width:40px;
+    height:40px
+  }
+  .chat-order-pill {
+    display:none
+  }
+.message-bubble {
+  max-width:76%;
+  font-size:13px;
+  padding:6px 8px 5px;
+  line-height:1.28;
+}
+
+.order-desc {
+  font-size:13px;
+  line-height:1.45;
+  padding:9px 10px;
+  max-height:120px;
+  overflow-y:auto;
+}
+
+.order-desc-label {
+  font-size:9px;
+  margin:8px 0 4px;
+}
+
+.chat-input-area {
+  padding:8px;
+  background:transparent;
+  border-top:none
+}
+  .chat-send-btn {
+    width:44px;
+    height:44px
+  }
+}
+</style>
 </head>
+<body class="overview-open">
+<div class="app">
+  <div class="logo app-logo">Заказ рабочего</div>
 
-<body>
 
+  <section id="overview" class="screen active">
+    <div class="overview-site">
 <header>
   <div class="logo">Рабочий Обзор</div>
   <a href="tel:+79999999999" class="phone">Позвонить</a>
@@ -488,7 +1923,7 @@
   <p>Общестроительные работы. </p>
 
       <div class="price">от 500₽ / час</div>
-  <button class="info-btn" onclick="openModal('raznorabohii')">Подробнее</button>
+  <button class="info-btn" onclick="overviewOpenModal('raznorabohii')">Подробнее</button>
   <a href="tel:+79999999999" class="btn">Позвонить</a>
 </div>
 
@@ -499,7 +1934,7 @@
   <p>Переезды, разгрузка. </p>
 
       <div class="price">от 500₽ / час</div>
-  <button class="info-btn" onclick="openModal('gruzchiki')">Подробнее</button>
+  <button class="info-btn" onclick="overviewOpenModal('gruzchiki')">Подробнее</button>
   <a href="tel:+79999999999" class="btn">Позвонить</a>
 </div>
 
@@ -509,7 +1944,7 @@
       <p>Копка, благоустройство </p>
       
       <div class="price">от 700₽ / час</div>
-      <button class="info-btn" onclick="openModal('zemlya')">Подробнее</button>
+      <button class="info-btn" onclick="overviewOpenModal('zemlya')">Подробнее</button>
       <a href="tel:+79999999999" class="btn">Позвонить</a>
     </div>
 
@@ -519,7 +1954,7 @@
       <p>Уборки территории дворники</p>
       
       <div class="price">от 400₽</div>
-      <button class="info-btn" onclick="openModal('uborka')">Подробнее</button>
+      <button class="info-btn" onclick="overviewOpenModal('uborka')">Подробнее</button>
       <a href="tel:+79999999999" class="btn">Позвонить</a>
     </div>
 
@@ -529,7 +1964,7 @@
       <p>Сортировке и упаковке товаров</p>
       
       <div class="price">договорная</div>
-      <button class="info-btn" onclick="openModal('fasovka')">Подробнее</button>
+      <button class="info-btn" onclick="overviewOpenModal('fasovka')">Подробнее</button>
       <a href="tel:+79999999999" class="btn">Позвонить</a>
     </div>
 
@@ -539,7 +1974,7 @@
   <p>Уборка помещений.</p>
 
       <div class="price">от 500₽</div>
-  <button class="info-btn" onclick="openModal('clining')">Подробнее</button>
+  <button class="info-btn" onclick="overviewOpenModal('clining')">Подробнее</button>
   <a href="tel:+79999999999" class="btn">Позвонить</a>
 </div>
 
@@ -549,7 +1984,7 @@
       <p>Мелкий ремонт</p>
       
       <div class="price">от 800₽</div>
-      <button class="info-btn" onclick="openModal('master')">Подробнее</button>
+      <button class="info-btn" onclick="overviewOpenModal('master')">Подробнее</button>
       <a href="tel:+79999999999" class="btn">Позвонить</a>
     </div>
 
@@ -559,7 +1994,7 @@
       <p>Демонтажные работы рабочими</p>
       
       <div class="price">от 800₽</div>
-      <button class="info-btn" onclick="openModal('demontag')">Подробнее</button>
+      <button class="info-btn" onclick="overviewOpenModal('demontag')">Подробнее</button>
       <a href="tel:+79999999999" class="btn">Позвонить</a>
     </div>
 
@@ -722,15 +2157,1176 @@
 <footer>
   © 2026 Рабочий Обзор
 </footer>
+<div id="overview-modal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="overviewCloseModal()">×</span>
+    <h2 id="overview-modal-title"></h2>
+    <p id="overview-modal-text"></p>
+    <div class="modal-gallery" id="overview-modal-gallery"></div>
+  </div>
+</div>
+
+<!-- 🔽 FULLSCREEN КАРТИНКА -->
+<div id="overview-img-viewer" class="img-viewer">
+  
+  <!-- ❌ КРЕСТИК -->
+  <span class="img-close" onclick="overviewCloseImage()">×</span>
+
+  <!-- ⬅️ СТРЕЛКА -->
+  <span class="img-prev" onclick="overviewPrevImage()">‹</span>
+
+  <!-- КАРТИНКА -->
+  <img id="overview-img-full" src="">
+
+  <!-- ➡️ СТРЕЛКА -->
+  <span class="img-next" onclick="overviewNextImage()">›</span>
+
+</div>
+
+
+    </div>
+  </section>
+
+
+  <section id="create" class="screen">
+    <div class="hero">
+      
+      <div class="hero-title">Выберите услугу и создайте заказ</div>
+      <div class="hero-sub">После отправки заказ сохраняется и появляется в разделе «Мои заказы».</div>
+    </div>
+
+    <form id="orderForm" class="card" novalidate>
+      <div class="section-title">Данные заказа</div>
+      <div class="section-sub">Для грузчиков минимальное время заказа — 2 часа. Для остальных услуг — от 8 часов.</div>
+
+      <div class="field" data-field="service">
+        <label>Название работы</label>
+        <select id="service" required>
+          <option value="">Выберите услугу</option>
+          <option value="Услуга разнорабочих">Услуга разнорабочих</option>
+          <option value="Услуга демонтажа (рабочие)">Услуга демонтажа (рабочие)</option>
+          <option value="Услуга земельные работы в ручную">Услуга земельные работы в ручную</option>
+          <option value="Услуга фасовщиков">Услуга фасовщиков</option>
+          <option value="Услуга грузчиков">Услуга грузчиков</option>
+          <option value="Услуга уборки территории">Услуга уборки территории</option>
+          <option value="Услуга клининга">Услуга клининга</option>
+          <option value="Другое">Другое</option>
+        </select>
+        <div class="error-text">Выберите услугу.</div>
+      </div>
+
+      <div class="field hidden" id="customServiceWrap" data-field="customService">
+        <label>Своя услуга</label>
+        <input id="customService" placeholder="Напишите название работы" />
+        <div class="error-text">Напишите название услуги.</div>
+      </div>
+
+      <div class="field" data-field="description">
+        <label>Описание заказа</label>
+        <textarea id="description" placeholder="Опишите задачу, объём работы, условия и важные детали"></textarea>
+        <div class="error-text">Заполните описание заказа.</div>
+      </div>
+
+      <div class="form-grid">
+<div class="field" data-field="city">
+  <label>Город</label>
+
+  <input id="city" type="hidden" value="" />
+
+  <div class="city-picker" id="cityPicker">
+    <button class="city-trigger" type="button" onclick="toggleCityPicker()">
+      <span id="cityText">Выберите город</span>
+      <div class="city-arrow">⌄</div>
+    </button>
+
+    <div class="city-menu">
+      <button class="city-option" type="button" onclick="selectCity('Томск')">Томск</button>
+      <button class="city-option" type="button" onclick="selectCity('Новосибирск')">Новосибирск</button>
+      <button class="city-option" type="button" onclick="selectCity('Красноярск')">Красноярск</button>
+      <button class="city-option" type="button" onclick="selectCity('Кемерово')">Кемерово</button>
+    </div>
+  </div>
+
+  <div class="error-text">Выберите город.</div>
+</div>
+
+<div class="field" data-field="startAt">
+  <label>Дата и время начала заказа</label>
+
+  <input id="startAt" type="hidden" value="" />
+
+  <div class="datetime-picker" id="datetimePicker">
+    <button class="datetime-trigger" type="button" onclick="toggleDateTimePicker()">
+      <span id="startAtText">Выберите дату и время</span>
+      <div class="city-arrow">⌄</div>
+    </button>
+
+<div class="datetime-menu">
+  <div class="datetime-title">Введите дату и время</div>
+
+  <div class="manual-datetime-grid">
+    <input id="manualOrderDate" type="date" onchange="applyManualDateTime()" />
+    <input id="manualOrderTime" type="time" onchange="applyManualDateTime()" />
+  </div>
+
+  <div class="datetime-title">Или выберите дату начала заказа</div>
+  <div class="date-options" id="dateOptions"></div>
+
+      <div class="datetime-title">Выберите время начала заказа</div>
+      <div class="time-options">
+        <button class="time-option" type="button" onclick="selectOrderTime('09:00')">08:00</button>
+        <button class="time-option" type="button" onclick="selectOrderTime('09:00')">09:00</button>
+        <button class="time-option" type="button" onclick="selectOrderTime('10:00')">10:00</button>
+        <button class="time-option" type="button" onclick="selectOrderTime('11:00')">11:00</button>
+        <button class="time-option" type="button" onclick="selectOrderTime('12:00')">12:00</button>
+        <button class="time-option" type="button" onclick="selectOrderTime('13:00')">13:00</button>
+        <button class="time-option" type="button" onclick="selectOrderTime('14:00')">14:00</button>
+        <button class="time-option" type="button" onclick="selectOrderTime('15:00')">15:00</button>
+        <button class="time-option" type="button" onclick="selectOrderTime('16:00')">16:00</button>
+        <button class="time-option" type="button" onclick="selectOrderTime('17:00')">17:00</button>
+        <button class="time-option" type="button" onclick="selectOrderTime('18:00')">18:00</button>
+        <button class="time-option" type="button" onclick="selectOrderTime('18:00')">19:00</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-text">Укажите дату и время.</div>
+</div>
+
+      <div class="field" data-field="address">
+        <label>Адрес объекта</label>
+        <input id="address" placeholder="Улица, дом, подъезд, ориентир" />
+        <div class="error-text">Укажите адрес объекта.</div>
+      </div>
+
+      <div class="field" data-field="hours">
+        <label id="hoursLabel">Кол-во часов (от 8 часов)</label>
+        <input id="hours" type="number" min="8" value="8" />
+        <div class="help" id="hoursHelp">Минимальное время заказа для выбранной услуги: 8 часов.</div>
+        <div class="error-text" id="hoursError">Укажите корректное количество часов.</div>
+      </div>
+
+<div class="field" data-field="workersCount">
+  <label>Количество рабочих</label>
+
+  <input id="workersCount" type="hidden" value="1" />
+
+  <div class="workers-picker">
+    <button class="workers-btn" type="button" onclick="changeWorkersCount(-1)">−</button>
+
+    <div class="workers-value">
+      <div id="workersCountText">1</div>
+      <span>рабочий</span>
+    </div>
+
+    <button class="workers-btn" type="button" onclick="changeWorkersCount(1)">+</button>
+  </div>
+
+  <div class="help">Выберите количество рабочих от 1 до 50.</div>
+  <div class="error-text">Выберите количество рабочих.</div>
+</div>
+
+      <div class="form-grid">
+        <div class="field" data-field="clientName">
+          <label>Ваше имя</label>
+          <input id="clientName" placeholder="Имя" />
+          <div class="error-text">Укажите ваше имя.</div>
+        </div>
+        <div class="field" data-field="phone">
+          <label>Номер телефона</label>
+          <input id="phone" inputmode="tel" placeholder="+7 (999) 123-45-67" maxlength="18" />
+          <div class="help">Формат российского номера: +7 (999) 123-45-67</div>
+          <div class="error-text">Введите российский номер телефона.</div>
+        </div>
+      </div>
+
+      <button class="btn dark" type="submit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 2-7 20-4-9-9-4 20-7Z"/><path d="M22 2 11 13"/></svg>
+        Отправить заказ
+      </button>
+    </form>
+  </section>
+
+  <section id="orders" class="screen">
+    <div class="hero">
+    
+      <div class="hero-title">Мои заказы</div>
+      <div class="hero-sub">Все созданные заявки отображаются здесь сразу после отправки формы.</div>
+    </div>
+    <div id="ordersList"></div>
+  </section>
+
+  <section id="chat" class="screen">
+    <div class="chat-shell">
+      <div class="chat-header">
+        <div class="chat-avatar">А</div>
+        <div class="chat-info">
+          <div class="chat-name">Администратор заказа</div>
+          <div class="chat-status">онлайн · обычно отвечает быстро</div>
+        </div>
+        <div class="chat-order-pill">Чат по заказу</div>
+      </div>
+
+      <div id="chatMessages" class="chat-messages"></div>
+
+
+
+      <div class="chat-input-area">
+        <div class="chat-textbox-wrap">
+          <button class="chat-attach-btn" type="button" onclick="showToast('Прикрепление файлов можно подключить позже')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21.44 11.05 12 20.5a6 6 0 0 1-8.49-8.49l9.9-9.9a4 4 0 0 1 5.66 5.66l-9.9 9.9a2 2 0 0 1-2.83-2.83l9.2-9.19"/></svg>
+          </button>
+          <textarea id="chatInput" class="chat-textbox" rows="1" placeholder="Сообщение администратору..." oninput="handleChatInput()" onkeydown="handleChatKeydown(event)"></textarea>
+        </div>
+        <button class="chat-send-btn" type="button" onclick="sendChatMessage()" aria-label="Отправить сообщение">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 2-7 20-4-9-9-4 20-7Z"/><path d="M22 2 11 13"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="navbar">
+  <div class="nav-item active" data-nav="overview" onclick="showScreen('overview')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 11 12 4l8 7"/><path d="M6 10v10h12V10"/><path d="M9 20v-6h6v6"/></svg>
+    Обзор
+  </div>
+  <div class="nav-item" data-nav="create" onclick="showScreen('create')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg>
+  Заказать
+  </div>
+  <div class="nav-item" data-nav="orders" onclick="showScreen('orders')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 7 9-4 9 4-9 4-9-4Z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
+    Мои заказы <span id="ordersBadge" class="badge hidden">0</span>
+  </div>
+  <div class="nav-item" data-nav="chat" onclick="showScreen('chat')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a8 8 0 0 1-8 8H7l-4 3 1.3-5.2A8 8 0 1 1 21 12Z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg>
+    Чат <span id="chatBadge" class="badge hidden">0</span>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<div id="successOverlay" class="success-overlay">
+  <div class="success-card">
+    <div class="success-check"><svg viewBox="0 0 52 52"><path d="M14 27l8 8 17-19"/></svg></div>
+    <div class="success-title">Заказ создан успешно</div>
+    <div class="success-text">Заявка добавлена в раздел «Мои заказы».</div>
+  </div>
+</div>
+
+<script src="customer-orders-sync/customer-orders-firebase.module.js"></script>
+<script src="customer-orders-sync/customer-orders-sync.js"></script>
 
 <script>
+const STORAGE_KEY = "worker_order_form_orders_v1";
+const CLIENT_ID_KEY = "worker_order_form_client_id_v1";
+const CHAT_STORAGE_KEY = "worker_order_form_chat_v1";
+const form = document.getElementById("orderForm");
+const service = document.getElementById("service");
+const customServiceWrap = document.getElementById("customServiceWrap");
+const customService = document.getElementById("customService");
+const hours = document.getElementById("hours");
+const hoursLabel = document.getElementById("hoursLabel");
+const hoursHelp = document.getElementById("hoursHelp");
+const phone = document.getElementById("phone");
+let orders = [];
+let chatMessages = [];
 
-function openModal(type){
-const gallery = document.getElementById('modal-gallery');
+let unreadChatCount = 0;
+
+const CHAT_READ_KEY = "worker_order_form_chat_read_v1";
+
+function chatReadKey(orderId){
+  return `${CHAT_READ_KEY}_${orderId}`;
+}
+
+function getMessageStableId(message){
+  return String(message.id || message.createdAt?.seconds || message.createdAt || message.text || "");
+}
+
+function loadReadChatIds(orderId){
+  try{
+    return JSON.parse(localStorage.getItem(chatReadKey(orderId)) || "[]");
+  }catch(e){
+    return [];
+  }
+}
+
+function saveReadChatIds(orderId, ids){
+  localStorage.setItem(chatReadKey(orderId), JSON.stringify([...new Set(ids)]));
+}
+
+function markCurrentChatAsRead(){
+  if(!activeChatOrderId) return;
+
+  const adminMessageIds = chatMessages
+    .filter(m => m.from === "admin")
+    .map(getMessageStableId)
+    .filter(Boolean);
+
+  saveReadChatIds(activeChatOrderId, adminMessageIds);
+
+  unreadChatCount = 0;
+  updateChatBadge();
+}
+
+let activeChatOrderId = null;
+let activeChatOrder = null;
+let activeChatUnsub = null;
+let activeAdminName = "";
+let chatSending = false;
+service.addEventListener("change", updateServiceRules);
+hours.addEventListener("input", validateHoursSoft);
+phone.addEventListener("input", () => formatRussianPhone(phone));
+form.addEventListener("submit", handleSubmit);
+function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function getClientId(){
+    let id = localStorage.getItem(CLIENT_ID_KEY);
+
+    if(!id){
+        id = "client_" + uid();
+        localStorage.setItem(CLIENT_ID_KEY, id);
+    }
+
+    return id;
+}
+
+const clientId = getClientId();
+
+function loadOrders() {
+    return [];
+}
+
+function saveOrders() {
+    // Заказы больше не храним локально.
+    // Источник правды — Firebase customerOrders.
+}
+function val(id) {
+    return document.getElementById(id).value.trim();
+}
+function escapeHtml(v) { return String(v ?? "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[s])); }
+function dateText(v) { if (!v)
+    return "—"; const d = new Date(v); return isNaN(d) ? String(v) : d.toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }); }
+function minHoursFor(serviceName) {
+    return serviceName === "Услуга грузчиков" ? 2 : 8;
+}
+function selectedTitle() {
+    return service.value === "Другое" ? customService.value.trim() : service.value;
+}
+
+function updateServiceRules() {
+    const isCustom = service.value === "Другое";
+    customServiceWrap.classList.toggle("hidden", !isCustom);
+    if (!isCustom)
+        customService.value = "";
+    const min = minHoursFor(service.value);
+    hours.min = min;
+    if (Number(hours.value || 0) < min)
+        hours.value = min;
+    hoursLabel.textContent = service.value === "Услуга грузчиков" ? "Кол-во часов (минимум 2 часа)" : "Кол-во часов (от 8 часов)";
+    hoursHelp.textContent = `Минимальное время заказа для выбранной услуги: ${min} ${pluralHours(min)}.`;
+    clearError("service");
+    clearError("customService");
+    clearError("hours");
+}
+function pluralHours(n) {
+    return n === 1 ? "час" : (n >= 2 && n <= 4 ? "часа" : "часов");
+}
+
+function workersWord(n) {
+    const last = n % 10;
+    const lastTwo = n % 100;
+
+    if (last === 1 && lastTwo !== 11) return "рабочий";
+    if (last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14)) return "рабочих";
+    return "рабочих";
+}
+
+function updateWorkersCountView() {
+    const input = document.getElementById("workersCount");
+    const text = document.getElementById("workersCountText");
+    const word = document.querySelector(".workers-value span");
+
+    const value = Math.min(50, Math.max(1, Number(input.value || 1)));
+
+    input.value = value;
+    text.textContent = value;
+    word.textContent = workersWord(value);
+}
+
+function changeWorkersCount(step) {
+    const input = document.getElementById("workersCount");
+    const current = Number(input.value || 1);
+    input.value = Math.min(50, Math.max(1, current + step));
+    updateWorkersCountView();
+    clearError("workersCount");
+}
+
+function toggleCityPicker() {
+    document.getElementById("cityPicker").classList.toggle("open");
+}
+
+function selectCity(cityName) {
+    document.getElementById("city").value = cityName;
+    document.getElementById("cityText").textContent = cityName;
+    document.getElementById("cityText").style.color = "#0f172a";
+
+    document.querySelectorAll(".city-option").forEach(btn => {
+        btn.classList.toggle("active", btn.textContent.trim() === cityName);
+    });
+
+    document.getElementById("cityPicker").classList.remove("open");
+    clearError("city");
+}
+
+let selectedOrderDate = "";
+let selectedOrderTime = "";
+
+function toggleDateTimePicker() {
+    createDateOptions();
+    document.getElementById("datetimePicker").classList.toggle("open");
+}
+
+function createDateOptions() {
+    const box = document.getElementById("dateOptions");
+    if (!box || box.children.length) return;
+
+    const today = new Date();
+
+    for (let i = 0; i < 9; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+
+        const value = d.toISOString().slice(0, 10);
+        const label = d.toLocaleDateString("ru-RU", {
+            day: "2-digit",
+            month: "short"
+        });
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "date-option";
+        btn.textContent = i === 0 ? "Сегодня" : i === 1 ? "Завтра" : label;
+        btn.onclick = () => selectOrderDate(value, btn);
+
+        box.appendChild(btn);
+    }
+}
+
+function selectOrderDate(value, btn) {
+    selectedOrderDate = value;
+
+    document.querySelectorAll(".date-option").forEach(el => el.classList.remove("active"));
+    btn.classList.add("active");
+
+    updateStartAtValue();
+}
+
+function selectOrderTime(value) {
+    selectedOrderTime = value;
+
+    document.querySelectorAll(".time-option").forEach(el => {
+        el.classList.toggle("active", el.textContent.trim() === value);
+    });
+
+    updateStartAtValue();
+}
+
+function applyManualDateTime() {
+    const date = document.getElementById("manualOrderDate").value;
+    const time = document.getElementById("manualOrderTime").value;
+
+    if (!date || !time) return;
+
+    selectedOrderDate = date;
+    selectedOrderTime = time;
+
+    document.querySelectorAll(".date-option, .time-option").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    updateStartAtValue();
+}
+
+function updateStartAtValue() {
+    if (!selectedOrderDate || !selectedOrderTime) return;
+
+    const fullValue = `${selectedOrderDate}T${selectedOrderTime}`;
+    document.getElementById("startAt").value = fullValue;
+
+    const text = dateText(fullValue);
+    document.getElementById("startAtText").textContent = text;
+    document.getElementById("startAtText").style.color = "#0f172a";
+
+    document.getElementById("datetimePicker").classList.remove("open");
+    clearError("startAt");
+}
+
+function validateHoursSoft() {
+    const min = minHoursFor(service.value);
+    if (Number(hours.value || 0) < min)
+        hours.setCustomValidity(`Минимум ${min} ${pluralHours(min)}`);
+    else
+        hours.setCustomValidity("");
+}
+function isRussianPhone(value) {
+    const digits = String(value || "").replace(/\D/g, "");
+    return /^7\d{10}$/.test(digits) || /^8\d{10}$/.test(digits);
+}
+function normalizePhone(value) {
+    let digits = String(value || "").replace(/\D/g, "");
+    if (digits.startsWith("8"))
+        digits = "7" + digits.slice(1);
+    return "+" + digits;
+}
+function formatRussianPhone(input) {
+    let digits = input.value.replace(/\D/g, "");
+    if (digits.startsWith("8"))
+        digits = "7" + digits.slice(1);
+    if (!digits.startsWith("7"))
+        digits = "7" + digits;
+    digits = digits.slice(0, 11);
+    let out = "+7";
+    if (digits.length > 1)
+        out += " (" + digits.slice(1, 4);
+    if (digits.length >= 4)
+        out += ")";
+    if (digits.length > 4)
+        out += " " + digits.slice(4, 7);
+    if (digits.length > 7)
+        out += "-" + digits.slice(7, 9);
+    if (digits.length > 9)
+        out += "-" + digits.slice(9, 11);
+    input.value = out;
+}
+function setError(name, text) {
+    const field = document.querySelector(`[data-field="${name}"]`);
+    if (!field)
+        return;
+    field.classList.add("error");
+    const error = field.querySelector(".error-text");
+    if (error && text)
+        error.textContent = text;
+}
+function clearError(name) {
+    const field = document.querySelector(`[data-field="${name}"]`);
+    if (field)
+        field.classList.remove("error");
+}
+function clearAllErrors() { document.querySelectorAll(".field.error").forEach(el => el.classList.remove("error")); }
+function showToast(text) {
+    const toast = document.getElementById("toast");
+    toast.textContent = text;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2200);
+}
+function showSuccess() {
+    const overlay = document.getElementById("successOverlay");
+    overlay.classList.add("show");
+    setTimeout(() => overlay.classList.remove("show"), 1450);
+}
+function clearForm() {
+    form.reset();
+    service.value = "";
+
+selectedOrderDate = "";
+selectedOrderTime = "";
+document.getElementById("startAt").value = "";
+document.getElementById("manualOrderDate").value = "";
+document.getElementById("manualOrderTime").value = "";
+document.getElementById("startAtText").textContent = "Выберите дату и время";
+document.getElementById("startAtText").style.color = "#64748b";
+document.querySelectorAll(".date-option, .time-option").forEach(btn => btn.classList.remove("active"));
+
+document.getElementById("city").value = "";
+document.getElementById("cityText").textContent = "Выберите город";
+document.getElementById("cityText").style.color = "#64748b";
+document.querySelectorAll(".city-option").forEach(btn => btn.classList.remove("active"));
+
+    customService.value = "";
+    customServiceWrap.classList.add("hidden");
+    hours.min = 8;
+    hours.value = 8;
+    document.getElementById("workersCount").value = "1";
+    updateWorkersCountView();
+    hoursLabel.textContent = "Кол-во часов (от 8 часов)";
+    hoursHelp.textContent = "Минимальное время заказа для выбранной услуги: 8 часов.";
+    clearAllErrors();
+}
+async function handleSubmit(e) {
+    e.preventDefault();
+    clearAllErrors();
+    const title = selectedTitle();
+    const min = minHoursFor(service.value);
+    const data = {
+        id: uid(),
+        title,
+        service: service.value,
+        description: val("description"),
+        city: val("city"),
+        startAt: val("startAt"),
+        address: val("address"),
+        hours: Number(hours.value || 0),
+        workersCount: Number(val("workersCount") || 0),
+        clientName: val("clientName"),
+        phone: normalizePhone(phone.value),
+        status: "Новый",
+        amount: null,
+        createdAt: new Date().toISOString(),
+        clientCreatedAt: new Date().toISOString()
+    };
+    let ok = true;
+    if (!service.value) {
+        setError("service");
+        ok = false;
+    }
+    if (service.value === "Другое" && !customService.value.trim()) {
+        setError("customService");
+        ok = false;
+    }
+    if (!data.description) {
+        setError("description");
+        ok = false;
+    }
+    if (!data.city) {
+        setError("city");
+        ok = false;
+    }
+    if (!data.startAt) {
+        setError("startAt");
+        ok = false;
+    }
+    if (!data.address) {
+        setError("address");
+        ok = false;
+    }
+    if (!data.hours || data.hours < min) {
+        setError("hours", `Минимальное время заказа: ${min} ${pluralHours(min)}.`);
+        ok = false;
+    }
+
+if (!data.workersCount || data.workersCount < 1) {
+    setError("workersCount");
+    ok = false;
+}
+
+    if (!data.clientName) {
+        setError("clientName");
+        ok = false;
+    }
+    if (!isRussianPhone(phone.value)) {
+        setError("phone");
+        ok = false;
+    }
+    if (!ok) {
+        showToast("Проверьте поля формы");
+        return;
+    }
+
+if(!window.CustomerOrdersSync){
+    showToast("Модуль отправки заказов не загружен");
+    return;
+}
+
+try{
+    data.clientId = clientId;
+    data.status = "new";
+
+    await window.CustomerOrdersSync.createOrder(data);
+
+    clearForm();
+    showSuccess();
+    setTimeout(() => showScreen("orders"), 1050);
+}catch(error){
+    console.error("Ошибка создания заказа:", error);
+    showToast("Не удалось отправить заказ. Проверьте интернет.");
+}    
+}
+
+function showScreen(id) {
+    window.scrollTo(0, 0);
+    document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id));
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.toggle("active", n.dataset.nav === id));
+    document.body.classList.toggle("chat-open", id === "chat");
+    document.body.classList.toggle("overview-open", id === "overview");
+    if (id === "orders") renderOrders();
+if (id === "chat") {
+    markCurrentChatAsRead();
+    renderChat();
+    setTimeout(() => document.getElementById("chatInput")?.focus(), 120);
+}
+}
+
+async function deleteOrder(id) {
+    if(!window.CustomerOrdersSync){
+        showToast("Модуль заказов не загружен");
+        return;
+    }
+
+    try{
+        await window.CustomerOrdersSync.deleteOrder(id);
+        showToast("Заказ удалён");
+    }catch(error){
+        console.error("Ошибка удаления заказа:", error);
+        showToast("Не удалось удалить заказ");
+    }
+}
+
+let cancelOrderTargetId = null;
+
+function openCancelOrderConfirm(orderId){
+  cancelOrderTargetId = orderId;
+
+  const modal = document.getElementById("cancelOrderModal");
+  const box = document.getElementById("cancelOrderBox");
+
+  box.innerHTML = `
+    <div class="cancel-title">Отменить заказ?</div>
+    <div class="cancel-text">Вы действительно хотите отменить заказ?</div>
+    <div class="cancel-actions">
+      <button class="btn danger" onclick="sendCancelOrderRequest()">Да</button>
+      <button class="btn ghost" onclick="closeCancelOrderModal()">Нет</button>
+    </div>
+  `;
+
+  modal.classList.add("open");
+}
+
+function closeCancelOrderModal(){
+  document.getElementById("cancelOrderModal")?.classList.remove("open");
+  cancelOrderTargetId = null;
+}
+
+async function sendCancelOrderRequest(){
+  if(!cancelOrderTargetId || !window.CustomerOrdersSync) return;
+
+  const box = document.getElementById("cancelOrderBox");
+
+  try{
+    await window.CustomerOrdersSync.requestCancelOrder(cancelOrderTargetId);
+
+    box.innerHTML = `
+      <div class="cancel-sent-loader"></div>
+      <div class="cancel-title">Отмена заказа отправлена админу</div>
+      <div class="cancel-text">Ожидайте подтверждения от администратора.</div>
+    `;
+
+    setTimeout(() => {
+      closeCancelOrderModal();
+    }, 1800);
+  }catch(error){
+    console.error(error);
+    showToast("Не удалось отправить отмену");
+  }
+}
+
+function repeatOrder(id) {
+    const order = orders.find(item => item.id === id);
+    if (!order)
+        return;
+    const exists = [...service.options].some(opt => opt.value === order.service);
+    service.value = exists ? order.service : "Другое";
+    updateServiceRules();
+    if (!exists || order.service === "Другое")
+        customService.value = order.title;
+    document.getElementById("description").value = order.description;
+    selectCity(order.city);
+    document.getElementById("address").value = order.address;
+document.getElementById("startAt").value = order.startAt || "";
+document.getElementById("startAtText").textContent = order.startAt ? dateText(order.startAt) : "Выберите дату и время";
+document.getElementById("startAtText").style.color = order.startAt ? "#0f172a" : "#64748b";
+
+if (order.startAt) {
+    const parts = order.startAt.split("T");
+    document.getElementById("manualOrderDate").value = parts[0] || "";
+    document.getElementById("manualOrderTime").value = parts[1] || "";
+}
+
+hours.value = order.hours || minHoursFor(service.value);
+    document.getElementById("workersCount").value = order.workersCount || 1;
+    updateWorkersCountView();
+    document.getElementById("clientName").value = order.clientName;
+    phone.value = order.phone;
+    showScreen("create");
+}
+function getAdminFullName(order) {
+    return String(
+        order?.adminFullName ||
+        order?.adminName ||
+        [order?.adminFirstName, order?.adminLastName].filter(Boolean).join(" ") ||
+        "Администратор"
+    ).trim();
+}
+
+function isOrderChatActive(order) {
+    const status = String(order?.status || "").toLowerCase();
+
+    return Boolean(
+        order &&
+        order.adminLogin &&
+        !["done", "completed", "complete", "finished", "closed", "cancelled", "canceled"].includes(status)
+    );
+}
+
+function updateChatHeader(order) {
+    const nameEl = document.querySelector(".chat-name");
+    const statusEl = document.querySelector(".chat-status");
+    const avatarEl = document.querySelector(".chat-avatar");
+    const pillEl = document.querySelector(".chat-order-pill");
+
+    if (!nameEl || !statusEl || !avatarEl || !pillEl) return;
+
+    if (!order) {
+        nameEl.textContent = "Чат с администратором";
+        statusEl.textContent = "Администратор подключится после принятия заказа";
+        avatarEl.textContent = "А";
+        pillEl.textContent = "Ожидание";
+        return;
+    }
+
+    const adminName = getAdminFullName(order);
+
+    nameEl.textContent = adminName;
+    statusEl.textContent = "админ присоединился к чату";
+    avatarEl.textContent = adminName.slice(0, 1).toUpperCase();
+    pillEl.textContent = "Чат активен";
+}
+
+function systemChatMessage(text) {
+    return {
+        id: "system_" + uid(),
+        from: "system",
+        text,
+        createdAt: new Date().toISOString()
+    };
+}
+
+async function activateMainChatForOrder(order) {
+    if (!window.CustomerOrdersSync || !order) return;
+
+    if (activeChatOrderId === order.id) {
+        activeChatOrder = order;
+        updateChatHeader(order);
+        return;
+    }
+
+    if (activeChatUnsub) activeChatUnsub();
+
+    activeChatOrderId = order.id;
+    activeChatOrder = order;
+    activeAdminName = getAdminFullName(order);
+
+    updateChatHeader(order);
+
+    activeChatUnsub = await window.CustomerOrdersSync.listenOrderChat(order.id, messages => {
+        const preparedMessages = [...messages];
+
+        preparedMessages.unshift(
+            systemChatMessage(`${activeAdminName} присоединился к чату`)
+        );
+
+chatMessages = preparedMessages;
+renderChat();
+
+const chatIsOpen = document.getElementById("chat")?.classList.contains("active");
+
+if (chatIsOpen) {
+    markCurrentChatAsRead();
+} else {
+    const readIds = loadReadChatIds(order.id);
+
+    const newUnreadAdminMessages = messages.filter(message => {
+        if (message.from !== "admin") return false;
+
+        const messageId = getMessageStableId(message);
+        return messageId && !readIds.includes(messageId);
+    });
+
+    unreadChatCount = newUnreadAdminMessages.length;
+    updateChatBadge();
+}
+    });
+}
+
+function detachMainChat() {
+    if (activeChatUnsub) activeChatUnsub();
+
+    activeChatUnsub = null;
+    activeChatOrderId = null;
+    activeChatOrder = null;
+    activeAdminName = "";
+
+    chatMessages = [
+        systemChatMessage("После принятия заказа администратор подключится к этому чату")
+    ];
+
+    updateChatHeader(null);
+    renderChat();
+}
+
+function chatDateObj(v) {
+    try {
+        if (!v) return null;
+        if (v.toDate) return v.toDate();
+        if (v.seconds) return new Date(v.seconds * 1000);
+        return new Date(v);
+    } catch (e) {
+        return null;
+    }
+}
+
+function chatTime(v) {
+    const d = chatDateObj(v);
+    return !d || isNaN(d) ? "" : d.toLocaleTimeString("ru-RU", {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
+function chatDateLabel(date) {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    const d = date.toDateString();
+    const t = today.toDateString();
+    const y = yesterday.toDateString();
+
+    if (d === t) return "Сегодня";
+    if (d === y) return "Вчера";
+
+    return date.toLocaleDateString("ru-RU", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+    });
+}
+
+function getClientMessageChecks(message) {
+    if (message.readByAdmin) return "✓✓";
+    if (message.deliveredToAdmin) return "✓✓";
+    return "✓";
+}
+
+function renderChat() {
+    const box = document.getElementById("chatMessages");
+    if (!box) return;
+
+    let lastDateKey = "";
+
+    box.innerHTML = chatMessages.map(message => {
+        if (message.from === "system") {
+            return `<div class="chat-date">${escapeHtml(message.text)}</div>`;
+        }
+
+        const d = chatDateObj(message.createdAt);
+        const dateKey = d && !isNaN(d) ? d.toDateString() : "";
+        let dateDivider = "";
+
+        if (dateKey && dateKey !== lastDateKey) {
+            lastDateKey = dateKey;
+            dateDivider = `<div class="chat-date">${chatDateLabel(d)}</div>`;
+        }
+
+        const isClient = message.from === "client";
+
+        return `
+            ${dateDivider}
+            <div class="message-row ${isClient ? "client" : "admin"}">
+                <div class="message-bubble">
+                    <span class="message-text">${escapeHtml(message.text)}</span>
+                    <span class="message-meta">
+                        <span>${chatTime(message.createdAt)}</span>
+                        ${isClient ? `
+                            <span class="message-checks ${message.readByAdmin ? "read" : ""}">
+                                ${getClientMessageChecks(message)}
+                            </span>
+                        ` : ""}
+                    </span>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    box.scrollTop = box.scrollHeight;
+}
+
+function handleChatInput(){
+    const input = document.getElementById("chatInput");
+    const messages = document.getElementById("chatMessages");
+
+    if(!input) return;
+
+    input.style.height = "22px";
+    input.style.height = Math.min(input.scrollHeight, 72) + "px";
+
+    if(messages){
+        requestAnimationFrame(() => {
+            messages.scrollTop = messages.scrollHeight;
+        });
+    }
+}
+
+function handleChatKeydown(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+    }
+}
+
+async function sendChatMessage() {
+    if (chatSending) return;
+
+    const input = document.getElementById("chatInput");
+    const sendBtn = document.querySelector(".chat-send-btn");
+
+    if (!input) return;
+
+    const text = input.value.trim();
+
+    if (!text) {
+        showToast("Напишите сообщение");
+        return;
+    }
+
+    if (!activeChatOrderId) {
+        showToast("Администратор ещё не подключился к заказу");
+        return;
+    }
+
+    chatSending = true;
+
+    input.value = "";
+    handleChatInput();
+
+    if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.style.opacity = "0.65";
+    }
+
+    try {
+        await window.CustomerOrdersSync.sendChatMessage(activeChatOrderId, text);
+    } catch (error) {
+        console.error("Ошибка отправки сообщения:", error);
+        showToast("Не удалось отправить сообщение");
+
+        input.value = text;
+        handleChatInput();
+    } finally {
+        chatSending = false;
+
+        if (sendBtn) {
+            sendBtn.disabled = false;
+            sendBtn.style.opacity = "";
+        }
+    }
+}
+
+function insertQuickChatText(text) {
+    const input = document.getElementById("chatInput");
+    if (!input) return;
+    input.value = text;
+    input.focus();
+    handleChatInput();
+}
+
+function updateChatBadge() {
+    const badge = document.getElementById("chatBadge");
+    if (!badge) return;
+    badge.textContent = unreadChatCount;
+    badge.classList.toggle("hidden", unreadChatCount === 0);
+}
+
+function renderOrders() {
+    const list = document.getElementById("ordersList");
+    const badge = document.getElementById("ordersBadge");
+
+    badge.textContent = orders.length;
+    badge.classList.toggle("hidden", orders.length === 0);
+
+    if (!orders.length) {
+        list.innerHTML = `<div class="empty">Пока нет заказов. После отправки формы заявка появится здесь.</div>`;
+        return;
+    }
+
+    list.innerHTML = orders.map(order => `
+    <div class="order-card ${order.status === "finish_requested" ? "order-card-finishing" : ""}">
+  <div class="order-card-content">
+      <div class="order-top">
+        <div class="order-title">${escapeHtml(order.title)}</div>
+        <span class="pill">${escapeHtml(order.status || "new")}</span>
+      </div>
+
+      <div class="order-desc-label">Описание заказа</div>
+      <div class="order-desc">${escapeHtml(order.description)}</div>
+
+      <div class="meta-grid">
+        <div class="meta"><div class="meta-label">Город</div><div class="meta-value">${escapeHtml(order.city)}</div></div>
+        <div class="meta"><div class="meta-label">Дата начала</div><div class="meta-value">${dateText(order.startAt)}</div></div>
+        <div class="meta"><div class="meta-label">Адрес объекта</div><div class="meta-value">${escapeHtml(order.address)}</div></div>
+        <div class="meta"><div class="meta-label">Кол-во часов</div><div class="meta-value">${order.hours}</div></div>
+        <div class="meta"><div class="meta-label">Кол-во рабочих</div><div class="meta-value">${order.workersCount || 1}</div></div>
+        <div class="meta"><div class="meta-label">Имя</div><div class="meta-value">${escapeHtml(order.clientName)}</div></div>
+
+        <div class="meta">
+          <div class="meta-label">Администратор</div>
+          <div class="meta-value">${order.adminName ? escapeHtml(order.adminName) : "Ожидайте, администратор скоро возьмёт заказ"}</div>
+        </div>
+
+        <div class="meta">
+          <div class="meta-label">Телефон администратора</div>
+          <div class="meta-value">${order.adminPhone ? escapeHtml(order.adminPhone) : "—"}</div>
+        </div>
+
+        <div class="meta">
+          <div class="meta-label">Сумма заказа</div>
+          <div class="meta-value">
+            ${order.amount
+              ? `<span class="order-price-ready">${escapeHtml(order.amount)} ₽</span>`
+              : `<div class="price-wait"><span class="price-loader"></span><span>Ожидайте, вам позвонит администратор и озвучит сумму заказа</span></div>`
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="order-actions">
+        ${order.adminPhone ? `<a class="btn ghost" href="tel:${escapeHtml(order.adminPhone)}">Позвонить администратору</a>` : ""}
+        
+        <button class="btn ghost" onclick="repeatOrder('${order.id}')">Повторить</button>
+        ${order.adminName || order.adminLogin
+  ? `<button class="btn danger" onclick="openCancelOrderConfirm('${order.id}')">Отменить заказ</button>`
+  : `<button class="btn danger" onclick="deleteOrder('${order.id}')">Удалить</button>`
+}
+      </div>
+    </div>
+
+    ${order.status === "finish_requested" ? `
+      <div class="finish-confirm-box">
+        <div class="finish-confirm-title">Завершение заказа</div>
+        <div class="finish-confirm-text">Администратор завершает заказ. Подтвердите завершение.</div>
+        <div class="finish-confirm-admin">
+          Администратор:<br>${escapeHtml(order.finishRequestedByName || order.adminName || "Администратор")}
+        </div>
+        <button class="btn danger" onclick="deleteOrder('${order.id}')">Подтвердить завершение</button>
+      </div>
+    ` : ""}
+  </div>
+  `).join("");
+}
+
+
+/* ===== OVERVIEW SITE JS START ===== */
+
+
+function overviewOpenModal(type){
+const gallery = document.getElementById('overview-modal-gallery');
 gallery.innerHTML = ''; // очищаем старые фото
-  const title = document.getElementById('modal-title');
-  const text = document.getElementById('modal-text');
-  const modal = document.getElementById('modal');
+  const title = document.getElementById('overview-modal-title');
+  const text = document.getElementById('overview-modal-text');
+  const modal = document.getElementById('overview-modal');
 
   if(type === 'raznorabohii'){
     title.innerText = 'Разнорабочие';
@@ -741,12 +3337,12 @@ gallery.innerHTML = ''; // очищаем старые фото
     'img/razno2.jpg',
     'img/razno3.jpg'  
   ];
-currentImages = images;
+overviewCurrentImages = images;
 
   images.forEach(src => {
     const img = document.createElement('img');
 img.src = src;
-img.onclick = () => openImage(src);
+img.onclick = () => overviewOpenImage(src);
 gallery.appendChild(img);
   });
   }
@@ -760,12 +3356,12 @@ gallery.appendChild(img);
     'img/gruzchiki2.jpg',
     'img/gruzchiki3.jpg'
   ];
-currentImages = images;
+overviewCurrentImages = images;
 
   images.forEach(src => {
         const img = document.createElement('img');
 img.src = src;
-img.onclick = () => openImage(src);
+img.onclick = () => overviewOpenImage(src);
 gallery.appendChild(img);
   });
   }
@@ -779,12 +3375,12 @@ gallery.appendChild(img);
     'img/zemlya2.jpg',
     'img/zemlya3.jpg'
   ];
-currentImages = images;
+overviewCurrentImages = images;
 
   images.forEach(src => {
       const img = document.createElement('img');
 img.src = src;
-img.onclick = () => openImage(src);
+img.onclick = () => overviewOpenImage(src);
 gallery.appendChild(img);
   });
   }
@@ -799,12 +3395,12 @@ gallery.appendChild(img);
     'img/uborka2.jpg',
     'img/uborka3.jpg'
   ];
-currentImages = images;
+overviewCurrentImages = images;
 
   images.forEach(src => {
     const img = document.createElement('img');
 img.src = src;
-img.onclick = () => openImage(src);
+img.onclick = () => overviewOpenImage(src);
 gallery.appendChild(img);
   });
   }
@@ -817,12 +3413,12 @@ gallery.appendChild(img);
     'img/fasovka2.jpg',
     'img/fasovka3.jpg'
   ];
-currentImages = images;
+overviewCurrentImages = images;
 
   images.forEach(src => {
     const img = document.createElement('img');
 img.src = src;
-img.onclick = () => openImage(src);
+img.onclick = () => overviewOpenImage(src);
 gallery.appendChild(img);
   });
   }
@@ -835,12 +3431,12 @@ gallery.appendChild(img);
     'img/clining2.jpg',
     'img/clining3.jpg'
   ];
-currentImages = images;
+overviewCurrentImages = images;
 
   images.forEach(src => {
     const img = document.createElement('img');
 img.src = src;
-img.onclick = () => openImage(src);
+img.onclick = () => overviewOpenImage(src);
 gallery.appendChild(img);
   });
   }
@@ -853,12 +3449,12 @@ gallery.appendChild(img);
     'img/master2.jpg',
     'img/master3.jpg'
   ];
-currentImages = images;
+overviewCurrentImages = images;
 
   images.forEach(src => {
     const img = document.createElement('img');
 img.src = src;
-img.onclick = () => openImage(src);
+img.onclick = () => overviewOpenImage(src);
 gallery.appendChild(img);
   });
   }
@@ -871,12 +3467,12 @@ gallery.appendChild(img);
     'img/demontag2.jpg',
     'img/demontag3.jpg'
   ];
-currentImages = images;
+overviewCurrentImages = images;
 
   images.forEach(src => {
     const img = document.createElement('img');
 img.src = src;
-img.onclick = () => openImage(src);
+img.onclick = () => overviewOpenImage(src);
 gallery.appendChild(img);
   });
   }
@@ -884,15 +3480,15 @@ gallery.appendChild(img);
   modal.style.display = 'flex';
 }
 
-function closeModal(){
-  document.getElementById('modal').style.display = 'none';
+function overviewCloseModal(){
+  document.getElementById('overview-modal').style.display = 'none';
 }
 
   // Простая анимация появления
-  const cards = document.querySelectorAll('.card');
+  const overviewCards = document.querySelectorAll('#overview .overview-site .card');
 
   window.addEventListener('scroll', () => {
-    cards.forEach(card => {
+    overviewCards.forEach(card => {
       const top = card.getBoundingClientRect().top;
       if(top < window.innerHeight - 50){
         card.style.opacity = 1;
@@ -902,10 +3498,10 @@ function closeModal(){
   });
 
   // Анимация блока "как мы работаем"
-const steps = document.querySelectorAll('.step');
+const overviewSteps = document.querySelectorAll('#overview .overview-site .step');
 
 window.addEventListener('scroll', () => {
-  steps.forEach(step => {
+  overviewSteps.forEach(step => {
     const top = step.getBoundingClientRect().top;
     if(top < window.innerHeight - 50){
       step.classList.add('active');
@@ -914,10 +3510,10 @@ window.addEventListener('scroll', () => {
 });
 
 // Анимация отзывов
-const reviews = document.querySelectorAll('.review');
+const overviewReviews = document.querySelectorAll('#overview .overview-site .review');
 
 window.addEventListener('scroll', () => {
-  reviews.forEach((el, i) => {
+  overviewReviews.forEach((el, i) => {
     const top = el.getBoundingClientRect().top;
     if(top < window.innerHeight - 50){
       setTimeout(() => {
@@ -928,65 +3524,115 @@ window.addEventListener('scroll', () => {
 });
 
 // Авто-прокрутка отзывов
-const reviewsContainer = document.querySelector('.reviews-scroll');
+const overviewReviewsContainer = document.querySelector('#overview .overview-site .reviews-scroll');
 
 let scrollAmount = 0;
 
 function autoScrollReviews(){
-  if(!reviewsContainer) return;
+  if(!overviewReviewsContainer) return;
 
   scrollAmount += 1;
 
-  reviewsContainer.scrollLeft += 1;
+  overviewReviewsContainer.scrollLeft += 1;
 
   // если дошли до конца — возвращаемся в начало
-  if(scrollAmount >= reviewsContainer.scrollWidth - reviewsContainer.clientWidth){
+  if(scrollAmount >= overviewReviewsContainer.scrollWidth - overviewReviewsContainer.clientWidth){
     scrollAmount = 0;
-    reviewsContainer.scrollLeft = 0;
+    overviewReviewsContainer.scrollLeft = 0;
   }
 }
 
 // плавная бесконечная прокрутка
 setInterval(autoScrollReviews, 20);
 
-let currentImages = [];
-let currentIndex = 0;
-function openImage(src){
-  const viewer = document.getElementById('img-viewer');
-  const img = document.getElementById('img-full');
+let overviewCurrentImages = [];
+let overviewCurrentIndex = 0;
+function overviewOpenImage(src){
+  const viewer = document.getElementById('overview-img-viewer');
+  const img = document.getElementById('overview-img-full');
 
-  currentIndex = currentImages.indexOf(src);
+  overviewCurrentIndex = overviewCurrentImages.indexOf(src);
 
   img.src = src;
   viewer.style.display = 'flex';
 }
 
-function closeImage(){
-  document.getElementById('img-viewer').style.display = 'none';
+function overviewCloseImage(){
+  document.getElementById('overview-img-viewer').style.display = 'none';
 }
 
-function nextImage(){
-  if(currentImages.length === 0) return;
+function overviewNextImage(){
+  if(overviewCurrentImages.length === 0) return;
 
-  currentIndex++;
-  if(currentIndex >= currentImages.length){
-    currentIndex = 0;
+  overviewCurrentIndex++;
+  if(overviewCurrentIndex >= overviewCurrentImages.length){
+    overviewCurrentIndex = 0;
   }
 
-  document.getElementById('img-full').src = currentImages[currentIndex];
+  document.getElementById('overview-img-full').src = overviewCurrentImages[overviewCurrentIndex];
 }
 
-function prevImage(){
-  if(currentImages.length === 0) return;
+function overviewPrevImage(){
+  if(overviewCurrentImages.length === 0) return;
 
-  currentIndex--;
-  if(currentIndex < 0){
-    currentIndex = currentImages.length - 1;
+  overviewCurrentIndex--;
+  if(overviewCurrentIndex < 0){
+    overviewCurrentIndex = overviewCurrentImages.length - 1;
   }
 
-  document.getElementById('img-full').src = currentImages[currentIndex];
+  document.getElementById('overview-img-full').src = overviewCurrentImages[overviewCurrentIndex];
 }
+
+/* ===== OVERVIEW SITE JS END ===== */
+window.showScreen = showScreen;
+window.deleteOrder = deleteOrder;
+window.repeatOrder = repeatOrder;
+window.insertQuickChatText = insertQuickChatText;
+window.handleChatInput = handleChatInput;
+window.handleChatKeydown = handleChatKeydown;
+window.sendChatMessage = sendChatMessage;
+updateServiceRules();
+
+let myOrdersListenerStarted = false;
+
+async function startMyOrdersListener(){
+    if(myOrdersListenerStarted) return;
+    if(!window.CustomerOrdersSync) return;
+    if(!window.CustomerOrdersFirebase) return;
+
+    myOrdersListenerStarted = true;
+
+    await window.CustomerOrdersSync.listenMyOrders(clientId, firebaseOrders => {
+        orders = firebaseOrders.sort((a, b) => {
+            const ad = new Date(a.clientCreatedAt || a.createdAt || 0);
+            const bd = new Date(b.clientCreatedAt || b.createdAt || 0);
+            return bd - ad;
+        });
+
+        renderOrders();
+
+        const chatOrder = orders.find(isOrderChatActive);
+
+        if (chatOrder) {
+            activateMainChatForOrder(chatOrder);
+        } else {
+            detachMainChat();
+        }
+    });
+}
+
+window.addEventListener("CustomerOrdersFirebaseReady", startMyOrdersListener);
+window.addEventListener("CustomerOrdersSyncReady", startMyOrdersListener);
+startMyOrdersListener();
+
+renderOrders();
+renderChat();
+updateChatBadge();
 </script>
+
+<div id="cancelOrderModal" class="cancel-modal">
+  <div class="cancel-box" id="cancelOrderBox"></div>
+</div>
 
 </body>
 </html>
